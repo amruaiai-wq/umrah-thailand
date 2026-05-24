@@ -7,13 +7,17 @@ function getServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key || url.includes("your-project")) return null;
-  const cookieStore = cookies();
-  return createServerClient(url, key, {
-    cookies: {
-      getAll: () => cookieStore.getAll(),
-      setAll: () => {},
-    },
-  });
+  try {
+    const cookieStore = cookies();
+    return createServerClient(url, key, {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    });
+  } catch {
+    return null;
+  }
 }
 
 // --- Articles ---
