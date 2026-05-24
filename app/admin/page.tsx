@@ -1,0 +1,211 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { Article, Sponsor } from "@/lib/types";
+import { GRADIENTS, CATEGORIES } from "@/data/seed";
+import { isSupabaseConfigured, getSupabaseBrowser } from "@/lib/supabase-client";
+import { useAdminData } from "@/components/useAdminData";
+
+const DEMO_PASS = "admin1234";
+
+export default function AdminPage() {
+  const cloud = isSupabaseConfigured();
+  const [authed, setAuthed] = useState(false);
+  const [pass, setPass] = useState("");
+  const [err, setErr] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const adminLogin = async () => {
+    if (cloud) {
+      const sb = getSupabaseBrowser();
+      if (!sb) return;
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) { setErr(true); return; }
+      setAuthed(true);
+    } else {
+      if (pass === DEMO_PASS) setAuthed(true);
+      else setErr(true);
+    }
+  };
+
+  if (!authed) {
+    return (
+      <main>
+        <section className="admin-login">
+          <div className="login-card">
+            <div className="logo" style={{ justifyContent: "center", marginBottom: 8 }}>
+              <svg className="mark" viewBox="0 0 48 48"><rect x="6" y="20" width="36" height="22" rx="2" fill="#0a1a32" stroke="#C9A24B" strokeWidth="1.5" /><rect x="6" y="20" width="36" height="6" fill="#C9A24B" /><path d="M24 4 L40 18 H8 Z" fill="#12294C" stroke="#C9A24B" strokeWidth="1.5" /></svg>
+            </div>
+            <h2 style={{ textAlign: "center", color: "#fff", fontSize: "1.4rem" }}>เข้าสู่ระบบหลังบ้าน</h2>
+            <p style={{ textAlign: "center", color: "rgba(255,255,255,.6)", fontSize: ".88rem", marginBottom: 22 }}>สำหรับผู้ดูแลระบบเท่านั้น</p>
+            {cloud && (
+              <div className="field"><label style={{ color: "rgba(255,255,255,.8)" }}>อีเมล</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@email.com" />
+              </div>
+            )}
+            <div className="field"><label style={{ color: "rgba(255,255,255,.8)" }}>รหัสผ่าน</label>
+              <input type="password" value={pass} onChange={(e) => setPass(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && adminLogin()} placeholder="กรอกรหัสผ่าน" />
+            </div>
+            <button className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} onClick={adminLogin}>เข้าสู่ระบบ</button>
+            {err && <p style={{ color: "#ff9b9b", fontSize: ".85rem", textAlign: "center", marginTop: 12 }}>ข้อมูลเข้าสู่ระบบไม่ถูกต้อง</p>}
+            {!cloud && <p style={{ textAlign: "center", color: "rgba(255,255,255,.4)", fontSize: ".78rem", marginTop: 18 }}>โหมดทดลอง · รหัส: admin1234</p>}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return <Dashboard cloud={cloud} onLogout={() => setAuthed(false)} />;
+}
+
+function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }) {
+  const d = useAdminData();
+  const [tab, setTab] = useState<"articles" | "ads">("articles");
+  const [modal, setModal] = useState<null | { type: "article" | "ad"; item?: Article | Sponsor }>(null);
+
+  const pubArticles = d.articles.filter((a) => a.published).length;
+  const liveAds = d.sponsors.filter((s) => s.active).length;
+
+  return (
+    <main>
+      {!cloud && (
+        <div className="notice-bar" style={{ paddingTop: 80 }}>
+          ⚙️ โหมดทดลอง — ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น ตั้งค่า Supabase เพื่อใช้งานจริง (ดู README)
+        </div>
+      )}
+      <section className="admin-dash" style={{ paddingTop: cloud ? 120 : 60 }}>
+        <div className="wrap">
+          <div className="dash-top">
+            <div>
+              <h1 style={{ fontSize: "1.7rem" }}>แผงควบคุมระบบ</h1>
+              <p style={{ color: "var(--muted)", fontSize: ".92rem" }}>จัดการบทความและโฆษณาของเว็บไซต์</p>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <Link className="btn btn-outline" href="/" style={{ fontSize: ".85rem" }}>↗ ดูเว็บไซต์</Link>
+              <button className="btn btn-outline" onClick={onLogout} style={{ fontSize: ".85rem" }}>ออกจากระบบ</button>
+            </div>
+          </div>
+
+          <div className="dash-stats">
+            <div className="stat-card"><div className="sv">{d.articles.length}</div><small>บทความทั้งหมด</small></div>
+            <div className="stat-card"><div className="sv">{pubArticles}</div><small>เผยแพร่อยู่</small></div>
+            <div className="stat-card"><div className="sv">{d.sponsors.length}</div><small>โฆษณาทั้งหมด</small></div>
+            <div className="stat-card"><div className="sv">{liveAds}</div><small>โฆษณาที่แสดง</small></div>
+          </div>
+
+          <div className="dash-tabs">
+            <button className={`dtab ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>📝 บทความ</button>
+            <button className={`dtab ${tab === "ads" ? "active" : ""}`} onClick={() => setTab("ads")}>📢 โฆษณา</button>
+          </div>
+
+          {tab === "articles" ? (
+            <div>
+              <div className="panel-head">
+                <h3>จัดการบทความ</h3>
+                <button className="btn btn-emerald" style={{ fontSize: ".88rem" }} onClick={() => setModal({ type: "article" })}>+ เพิ่มบทความ</button>
+              </div>
+              <div className="admin-table">
+                {d.articles.map((a) => (
+                  <div className="arow" key={a.id}>
+                    <div className="thumb" style={{ background: a.img }} />
+                    <div className="ainfo"><b>{a.title}</b><small><span className="tagcat">{a.cat}</span> · {a.date}</small></div>
+                    <button className={`status-pill ${a.published ? "st-on" : "st-off"}`} onClick={() => d.toggleArticle(a.id)}>{a.published ? "เผยแพร่" : "ซ่อน"}</button>
+                    <div className="arow-actions">
+                      <button className="iconbtn" title="แก้ไข" onClick={() => setModal({ type: "article", item: a })}>✎</button>
+                      <button className="iconbtn del" title="ลบ" onClick={() => confirm("ลบบทความนี้?") && d.deleteArticle(a.id)}>🗑</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="panel-head">
+                <h3>จัดการโฆษณา / ผู้สนับสนุน</h3>
+                <button className="btn btn-emerald" style={{ fontSize: ".88rem" }} onClick={() => setModal({ type: "ad" })}>+ เพิ่มโฆษณา</button>
+              </div>
+              <div className="admin-table">
+                {d.sponsors.map((s) => (
+                  <div className="arow" key={s.id}>
+                    <div className="alogo">{s.i}</div>
+                    <div className="ainfo"><b>{s.n}</b><small>{s.r}</small></div>
+                    <button className={`status-pill ${s.active ? "st-on" : "st-off"}`} onClick={() => d.toggleSponsor(s.id)}>{s.active ? "แสดง" : "ปิด"}</button>
+                    <div className="arow-actions">
+                      <button className="iconbtn" title="แก้ไข" onClick={() => setModal({ type: "ad", item: s })}>✎</button>
+                      <button className="iconbtn del" title="ลบ" onClick={() => confirm("ลบโฆษณานี้?") && d.deleteSponsor(s.id)}>🗑</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {modal?.type === "article" && (
+        <ArticleModal item={modal.item as Article} onClose={() => setModal(null)}
+          onSave={(data, id) => { d.saveArticle(data, id); setModal(null); }} />
+      )}
+      {modal?.type === "ad" && (
+        <AdModal item={modal.item as Sponsor} onClose={() => setModal(null)}
+          onSave={(data, id) => { d.saveSponsor(data, id); setModal(null); }} />
+      )}
+    </main>
+  );
+}
+
+function slugify(s: string) {
+  return s.trim().toLowerCase().replace(/[^\w\u0E00-\u0E7F]+/g, "-").replace(/^-+|-+$/g, "") || "article-" + Date.now();
+}
+
+function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
+  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: CATEGORIES[0], date: "", ex: "", body: "", img: GRADIENTS[0], published: true });
+  const upd = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const save = () => {
+    if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
+    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
+  };
+  return (
+    <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-card">
+        <div className="modal-head"><h3>{item ? "แก้ไขบทความ" : "เพิ่มบทความ"}</h3><button className="modal-x" onClick={onClose}>×</button></div>
+        <div className="modal-body">
+          <div className="field"><label>หัวข้อบทความ</label><input value={f.title} onChange={(e) => upd("title", e.target.value)} placeholder="ชื่อบทความ" /></div>
+          <div className="field"><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+          <div className="field"><label>วันที่</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
+          <div className="field"><label>เนื้อหาย่อ</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="คำโปรยสั้น ๆ" /></div>
+          <div className="field"><label>เนื้อหาเต็ม</label><textarea value={f.body} onChange={(e) => upd("body", e.target.value)} placeholder="เนื้อหาบทความ (เว้นบรรทัดเพื่อขึ้นย่อหน้าใหม่)" style={{ minHeight: 140 }} /></div>
+          <div className="field"><label>สีปก</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
+          <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdModal({ item, onClose, onSave }: { item?: Sponsor; onClose: () => void; onSave: (d: Partial<Sponsor>, id?: number) => void }) {
+  const [f, setF] = useState<Partial<Sponsor>>(item || { n: "", r: "★ 5.0 · ", d: "", i: "A", url: "#", active: true });
+  const upd = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const save = () => {
+    if (!f.n?.trim()) { alert("กรุณากรอกชื่อบริษัท"); return; }
+    onSave({ ...f, i: (f.i?.trim() || f.n![0] || "A").toUpperCase(), url: f.url?.trim() || "#" }, item?.id);
+  };
+  return (
+    <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-card">
+        <div className="modal-head"><h3>{item ? "แก้ไขโฆษณา" : "เพิ่มโฆษณา"}</h3><button className="modal-x" onClick={onClose}>×</button></div>
+        <div className="modal-body">
+          <div className="field"><label>ชื่อบริษัท</label><input value={f.n} onChange={(e) => upd("n", e.target.value)} placeholder="ชื่อผู้ให้บริการ" /></div>
+          <div className="field"><label>เรตติ้ง / ใบอนุญาต</label><input value={f.r} onChange={(e) => upd("r", e.target.value)} placeholder="★ 4.9 · ใบอนุญาตเลขที่..." /></div>
+          <div className="field"><label>คำอธิบาย</label><textarea value={f.d} onChange={(e) => upd("d", e.target.value)} placeholder="จุดเด่นของบริการ" /></div>
+          <div style={{ display: "flex", gap: 14 }}>
+            <div className="field" style={{ width: 90 }}><label>อักษรโลโก้</label><input value={f.i} maxLength={2} onChange={(e) => upd("i", e.target.value)} placeholder="A" /></div>
+            <div className="field" style={{ flex: 1 }}><label>ลิงก์ปลายทาง</label><input value={f.url} onChange={(e) => upd("url", e.target.value)} placeholder="https://..." /></div>
+          </div>
+          <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
+        </div>
+      </div>
+    </div>
+  );
+}
