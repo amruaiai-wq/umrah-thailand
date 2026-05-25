@@ -5,6 +5,13 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://umrahthailand.com"),
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: { url: "/apple-touch-icon-180.png", sizes: "180x180" },
+  },
   title: {
     default: "คู่มืออุมเราะห์และฮัจญ์ ฉบับสมบูรณ์ พร้อมดุอาอ์และหลักฐาน | Umrah Thailand",
     template: "%s | Umrah Thailand",

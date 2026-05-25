@@ -1,0 +1,37 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Umrah Thailand">
+  <defs>
+    <linearGradient id="navyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16335f"/>
+      <stop offset="0.55" stop-color="#0B1F3A"/>
+      <stop offset="1" stop-color="#070f1f"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E0C277"/>
+      <stop offset="1" stop-color="#C9A24B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- badge -->
+  <rect x="6" y="6" width="108" height="108" rx="28" fill="url(#navyGrad)"/>
+  <!-- hairline frame -->
+  <rect x="14.5" y="14.5" width="91" height="91" rx="21" fill="none" stroke="#C9A24B" stroke-opacity="0.45" stroke-width="1"/>
+
+  <!-- tawaf orbit -->
+  <ellipse cx="60" cy="70" rx="30" ry="11" fill="none" stroke="#C9A24B" stroke-opacity="0.40" stroke-width="1.4" stroke-dasharray="2.5 4.5"/>
+
+  <!-- mihrab arch (pointed) -->
+  <path d="M38 92 L38 56 Q39.5 36 60 30 Q80.5 36 82 56 L82 92 Z"
+        fill="none" stroke="url(#goldGrad)" stroke-width="2.4" stroke-linejoin="round"/>
+
+  <!-- kaaba -->
+  <rect x="47" y="62" width="26" height="28" rx="1.5" fill="#0a1426" stroke="#C9A24B" stroke-opacity="0.5" stroke-width="0.8"/>
+  <!-- kiswah band -->
+  <rect x="47" y="68" width="26" height="5.5" fill="url(#goldGrad)"/>
+  <!-- door -->
+  <rect x="56" y="76" width="8" height="14" rx="1" fill="#C9A24B" fill-opacity="0.85"/>
+
+  <!-- finial star at apex -->
+  <g transform="translate(60 22)">
+    <path d="M0 -7 L1.7 -1.7 L7 0 L1.7 1.7 L0 7 L-1.7 1.7 L-7 0 L-1.7 -1.7 Z" fill="url(#goldGrad)"/>
+  </g>
+</svg>

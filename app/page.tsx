@@ -14,7 +14,6 @@ export default async function HomePage() {
         <div className="hero-pattern" />
         <div className="hero-glow" />
         <div className="wrap">
-          <span className="eyebrow" style={{ display: "inline-flex" }}>بسم الله الرحمن الرحيم</span>
           <h1>
             เรียนรู้วิธีทำ<br />
             <em>อุมเราะห์ &amp; ฮัจญ์</em><br />

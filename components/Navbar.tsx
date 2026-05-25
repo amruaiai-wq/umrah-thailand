@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,12 +28,7 @@ export default function Navbar() {
     <header className={`site ${scrolled ? "scrolled" : ""}`}>
       <div className="wrap nav">
         <Link href="/" className="logo">
-          <svg className="mark" viewBox="0 0 48 48">
-            <rect x="6" y="20" width="36" height="22" rx="2" fill="#0a1a32" stroke="#C9A24B" strokeWidth="1.5" />
-            <rect x="6" y="20" width="36" height="6" fill="#C9A24B" />
-            <path d="M24 4 L40 18 H8 Z" fill="#12294C" stroke="#C9A24B" strokeWidth="1.5" />
-            <circle cx="24" cy="32" r="4" fill="#C9A24B" />
-          </svg>
+          <Image src="/logo-mark.svg" width={44} height={44} alt="Umrah Thailand logo" priority />
           <div>
             <b>Umrah Thailand</b>
             <span>UMRAH &amp; HAJJ THAILAND</span>

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Article, Sponsor } from "@/lib/types";
@@ -34,7 +35,7 @@ export default function AdminPage() {
         <section className="admin-login">
           <div className="login-card">
             <div className="logo" style={{ justifyContent: "center", marginBottom: 8 }}>
-              <svg className="mark" viewBox="0 0 48 48"><rect x="6" y="20" width="36" height="22" rx="2" fill="#0a1a32" stroke="#C9A24B" strokeWidth="1.5" /><rect x="6" y="20" width="36" height="6" fill="#C9A24B" /><path d="M24 4 L40 18 H8 Z" fill="#12294C" stroke="#C9A24B" strokeWidth="1.5" /></svg>
+              <Image src="/logo-mark.svg" width={56} height={56} alt="Umrah Thailand logo" />
             </div>
             <h2 style={{ textAlign: "center", color: "#fff", fontSize: "1.4rem" }}>เข้าสู่ระบบหลังบ้าน</h2>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,.6)", fontSize: ".88rem", marginBottom: 22 }}>สำหรับผู้ดูแลระบบเท่านั้น</p>
