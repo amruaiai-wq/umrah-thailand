@@ -279,6 +279,52 @@ footer.site{background:#070f1f;color:rgba(255,255,255,.7);padding:60px 0 26px;ma
 .swatch.sel{border-color:var(--gold)}
 .notice-bar{background:#fff8ec;border-bottom:1px solid #f0e0bd;color:#7a5e22;font-size:.85rem;text-align:center;padding:8px 16px}
 
+/* ── ANIMATIONS ── */
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes kaabaPulse {
+  0%,100% { filter: drop-shadow(0 0 22px rgba(201,162,75,.28)); }
+  50%     { filter: drop-shadow(0 0 56px rgba(201,162,75,.60)); }
+}
+
+.anim-hero { animation: heroReveal .9s cubic-bezier(.22,1,.36,1) both; display: inline-block; }
+.anim-d0 { animation-delay: .05s; }
+.anim-d1 { animation-delay: .25s; }
+.anim-d2 { animation-delay: .45s; }
+.anim-d3 { animation-delay: .65s; }
+.anim-d4 { animation-delay: .85s; }
+.anim-d5 { animation-delay: 1.00s; }
+
+.hero-kaaba {
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translateY(-48%);
+  width: 320px;
+  pointer-events: none;
+  z-index: 1;
+  animation: kaabaPulse 5s ease-in-out infinite;
+  opacity: .55;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .72s cubic-bezier(.22,1,.36,1), transform .72s cubic-bezier(.22,1,.36,1);
+}
+.fade-up.revealed { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 1100px) { .hero-kaaba { width: 240px; opacity: .35; } }
+@media (max-width: 860px)  { .hero-kaaba { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-hero { animation: none; opacity: 1; transform: none; }
+  .fade-up   { opacity: 1; transform: none; transition: none; }
+  .hero-kaaba { animation: none; }
+}
+
 @media(max-width:980px){
   .about-intro,.contact-grid,.guide-layout{grid-template-columns:1fr}
   .toc{position:static;margin-bottom:24px}
