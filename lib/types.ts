@@ -14,6 +14,8 @@ export interface GuideStep {
   ar: string;
   rule: Rule;
   desc: string;
+  tips?: string[];
+  mistakes?: string[];
   duas: Dua[];
   evi: string;
   ad?: boolean;

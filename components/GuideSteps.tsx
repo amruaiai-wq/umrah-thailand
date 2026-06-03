@@ -45,7 +45,26 @@ export default function GuideSteps({ steps, defaultOpen = 0 }: { steps: GuideSte
           </div>
           <div className="step-body">
             <div className="step-inner">
-              <p>{s.desc}</p>
+              <div className="step-desc" dangerouslySetInnerHTML={{ __html: s.desc.replace(/\n\n/g, "</p><p>").replace(/①|②|③|④|⑤/g, (m) => `<b>${m}</b>`) }} />
+
+              {s.tips && s.tips.length > 0 && (
+                <div className="step-tips">
+                  <div className="subh tips-head">✅ เคล็ดลับและข้อควรรู้</div>
+                  <ul>
+                    {s.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {s.mistakes && s.mistakes.length > 0 && (
+                <div className="step-mistakes">
+                  <div className="subh mistakes-head">⚠️ ข้อผิดพลาดที่พบบ่อย</div>
+                  <ul>
+                    {s.mistakes.map((m, i) => <li key={i}>{m}</li>)}
+                  </ul>
+                </div>
+              )}
+
               <div className="subh" style={{ color: "var(--emerald)" }}>ดุอาอ์ที่กล่าว</div>
               {s.duas.map((d, i) => (
                 <div key={i}>
