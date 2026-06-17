@@ -72,13 +72,11 @@ export default async function HomePage() {
             <em className="anim-hero anim-d2">อุมเราะห์ได้ง่ายขึ้น</em>
           </h1>
           <p className="hero-sub anim-hero anim-d3">
-            รวมทุกอย่างเกี่ยวกับอุมเราะห์ไว้ที่เดียว<br />
-            <span className="hero-quote">เพราะเราเชื่อว่า อุมเราะห์หนึ่ง เปลี่ยนชีวิตคุณได้</span>
+            รวมทุกอย่างเกี่ยวกับอุมเราะห์ไว้ที่เดียว
           </p>
-          <div className="hero-cta anim-hero anim-d4">
-            <Link className="btn btn-orange" href="/umrah">ดูคู่มืออุมเราะห์ →</Link>
-            <Link className="btn btn-ghost" href="/contact">ปรึกษาฟรี</Link>
-          </div>
+          <p className="hero-quote anim-hero anim-d4">
+            เพราะเราเชื่อว่า อุมเราะห์หนึ่ง เปลี่ยนชีวิตคุณได้
+          </p>
         </div>
       </section>
 
