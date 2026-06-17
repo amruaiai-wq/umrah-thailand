@@ -2,8 +2,56 @@ import Link from "next/link";
 import { getArticles, getSponsors } from "@/lib/data";
 import { ArticleCard } from "@/components/ArticleGrid";
 import SponsorGrid from "@/components/SponsorGrid";
-import HeroKaaba from "@/components/HeroKaaba";
+import KaabaBackground from "@/components/KaabaBackground";
 import ScrollReveal from "@/components/ScrollReveal";
+
+const services = [
+  {
+    icon: (
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+    ),
+    title: "รับทำวีซ่าอุมเราะห์",
+    desc: "ดำเนินการวีซ่าอุมเราะห์ครบวงจร รวดเร็ว ถูกต้องตามขั้นตอนสถานทูต",
+    tag: null,
+  },
+  {
+    icon: (
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <path d="M9 22V12h6v10"/>
+      </svg>
+    ),
+    title: "จองที่พักมักกะฮ์-มะดีนะฮ์",
+    desc: "เลือกที่พักระยะใกล้มัสยิด หลากหลายระดับราคา เหมาะกับทุกงบประมาณ",
+    tag: null,
+  },
+  {
+    icon: (
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <rect x="1" y="3" width="15" height="13" rx="2"/>
+        <path d="M16 8h4l3 5v3h-7V8z"/>
+        <circle cx="5.5" cy="18.5" r="2.5"/>
+        <circle cx="18.5" cy="18.5" r="2.5"/>
+      </svg>
+    ),
+    title: "บริการรถบัส",
+    desc: "รถบัสรับ-ส่งทุกเส้นทาง สนามบิน มักกะฮ์ มะดีนะฮ์ สะดวก ตรงเวลา",
+    tag: null,
+  },
+  {
+    icon: (
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+    ),
+    title: "ปรึกษาวางแผนอุมเราะห์",
+    desc: "ทีมงานพร้อมให้คำปรึกษาและวางแผนการเดินทาง ไม่มีค่าใช้จ่ายใดๆ",
+    tag: "ฟรี",
+  },
+];
 
 export default async function HomePage() {
   const [articles, sponsors] = await Promise.all([getArticles(true), getSponsors(true)]);
@@ -15,44 +63,49 @@ export default async function HomePage() {
 
       {/* HERO */}
       <section className="hero">
-        <div className="hero-pattern" />
-        <div className="hero-glow" />
-        <HeroKaaba />
-        <div className="wrap">
+        <KaabaBackground />
+        <div className="wrap hero-content">
+          <p className="hero-eyebrow anim-hero anim-d0">Umrah Thailand</p>
           <h1>
-            <span className="anim-hero anim-d0">เรียนรู้วิธีทำ</span>
+            <span className="anim-hero anim-d1">เราช่วยให้คุณทำ</span>
             <br />
-            <em className="anim-hero anim-d1">อุมเราะห์ &amp; ฮัจญ์</em>
-            <br />
-            <span className="anim-hero anim-d2">อย่างถูกต้องตามสุนนะฮ์</span>
+            <em className="anim-hero anim-d2">อุมเราะห์ได้ง่ายขึ้น</em>
           </h1>
-          <p className="anim-hero anim-d3">
-            ศูนย์รวมความรู้สำหรับมุสลิมไทย อธิบายทุกขั้นตอนพร้อมดุอาอ์ภาษาอาหรับ คำอ่าน
-            ความหมาย และหลักฐานจากอัลกุรอานและสุนนะฮ์ — เข้าใจง่าย ใช้ได้จริง
+          <p className="hero-sub anim-hero anim-d3">
+            รวมทุกอย่างเกี่ยวกับอุมเราะห์ไว้ที่เดียว<br />
+            <span className="hero-quote">เพราะเราเชื่อว่า อุมเราะห์หนึ่ง เปลี่ยนชีวิตคุณได้</span>
           </p>
-          <div className="guide-pick">
-            <Link className="gp-card anim-hero anim-d4" href="/umrah">
-              <div className="ic">
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3a9 9 0 100 18 9 9 0 000-18z" /><path d="M12 7v5l3 2" /></svg>
-              </div>
-              <h3>วิธีทำอุมเราะห์</h3>
-              <p>5 ขั้นตอนหลัก ทำได้ตลอดทั้งปี</p>
-              <span className="go">ดูคู่มือ →</span>
-            </Link>
-            <Link className="gp-card anim-hero anim-d5" href="/hajj">
-              <div className="ic">
-                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18M5 21V9l7-5 7 5v12" /><path d="M9 21v-6h6v6" /></svg>
-              </div>
-              <h3>วิธีทำฮัจญ์</h3>
-              <p>เฉพาะช่วงเดือนซุลฮิจญะฮ์เท่านั้น</p>
-              <span className="go">ดูคู่มือ →</span>
-            </Link>
+          <div className="hero-cta anim-hero anim-d4">
+            <Link className="btn btn-orange" href="/umrah">ดูคู่มืออุมเราะห์ →</Link>
+            <Link className="btn btn-ghost" href="/contact">ปรึกษาฟรี</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="sec-head fade-up">
+            <span className="eyebrow">บริการของเรา</span>
+            <h2>ครบทุกอย่าง ตั้งแต่ต้นจนถึงปลายทาง</h2>
+            <p>ทีมงานดูแลคุณทุกขั้นตอน ตั้งแต่วางแผนจนกลับบ้านอย่างปลอดภัย</p>
+          </div>
+          <div className="svc-grid">
+            {services.map((s, i) => (
+              <Link href="/contact" key={i} className="svc-card fade-up" style={{ transitionDelay: `${i * 80}ms` }}>
+                {s.tag && <span className="svc-tag">{s.tag}</span>}
+                <div className="svc-icon">{s.icon}</div>
+                <h4>{s.title}</h4>
+                <p>{s.desc}</p>
+                <span className="svc-more">ติดต่อเรา →</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       {/* WHY */}
-      <section className="sec">
+      <section className="sec sec-gray">
         <div className="wrap">
           <div className="sec-head fade-up">
             <span className="eyebrow">ทำไมต้องที่นี่</span>
@@ -65,12 +118,12 @@ export default async function HomePage() {
               <h4>มีหลักฐานกำกับ</h4>
               <p>ทุกดุอาอ์และทุกขั้นตอนระบุที่มาจากอัลกุรอานและหะดีษ</p>
             </div>
-            <div className="vm-card fade-up" style={{ transitionDelay: "120ms" }}>
+            <div className="vm-card fade-up" style={{ transitionDelay: "100ms" }}>
               <div className="ic"><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 5h18M3 12h18M3 19h12" /></svg></div>
               <h4>เป็นขั้นตอน</h4>
               <p>เรียงลำดับชัดเจน พร้อมระบุว่าข้อใดเป็นรุก่น วาญิบ หรือสุนนะฮ์</p>
             </div>
-            <div className="vm-card fade-up" style={{ transitionDelay: "240ms" }}>
+            <div className="vm-card fade-up" style={{ transitionDelay: "200ms" }}>
               <div className="ic"><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3l9 4.5v9L12 21 3 16.5v-9z" /></svg></div>
               <h4>ดุอาอ์ครบ</h4>
               <p>ภาษาอาหรับ คำอ่านไทย และความหมาย พร้อมใช้ระหว่างประกอบพิธี</p>
@@ -88,10 +141,6 @@ export default async function HomePage() {
             <p>เปรียบเทียบผู้ให้บริการที่ได้รับใบอนุญาต เพื่อเลือกแพ็กเกจที่เหมาะกับคุณ</p>
           </div>
           <SponsorGrid sponsors={sponsors} />
-          <div className="leaderboard fade-up">
-            <span className="ad-label">พื้นที่โฆษณา · Ad Slot 970×250</span>
-            <p style={{ marginTop: 8, fontSize: ".9rem" }}>พื้นที่สำหรับแบนเนอร์พันธมิตร / Google AdSense / สปอนเซอร์</p>
-          </div>
         </div>
       </section>
 

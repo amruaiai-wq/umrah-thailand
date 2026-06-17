@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(Copy-Item \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\public\\\\logo-mark-192.png\" \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\app\\\\icon.png\")"
+    ]
+  }
+}

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 const LINKS = [
   { href: "/", label: "หน้าหลัก" },
   { href: "/umrah", label: "คู่มืออุมเราะห์" },
-  { href: "/hajj", label: "คู่มือฮัจญ์" },
   { href: "/articles", label: "บทความ" },
   { href: "/about", label: "เกี่ยวกับเรา" },
   { href: "/contact", label: "ติดต่อ" },
@@ -31,7 +30,7 @@ export default function Navbar() {
           <Image src="/logo-mark.svg" width={44} height={44} alt="Umrah Thailand logo" priority />
           <div>
             <b>Umrah Thailand</b>
-            <span>UMRAH &amp; HAJJ THAILAND</span>
+            <span>UMRAH GUIDE THAILAND</span>
           </div>
         </Link>
         <ul className={`menu ${open ? "open" : ""}`}>
@@ -48,8 +47,8 @@ export default function Navbar() {
           ))}
         </ul>
         <div className="nav-right">
-          <Link className="btn btn-gold" href="/umrah">
-            เริ่มเรียนรู้ →
+          <Link className="btn btn-orange" href="/contact">
+            ปรึกษาฟรี →
           </Link>
           <button className="burger" aria-label="menu" onClick={() => setOpen(!open)}>
             <span></span><span></span><span></span>
