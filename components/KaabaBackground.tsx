@@ -36,6 +36,7 @@ export default function KaabaBackground() {
 
   useEffect(() => { setPhase(getMeccaPhase()); }, []);
 
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -99,18 +100,15 @@ export default function KaabaBackground() {
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
 
-  const isNight = phase === "night" || phase === "dawn";
-
   return (
     <div className="kaaba-bg-wrap">
-      {/* Placeholder shown while image loads */}
       <div className="kaaba-placeholder" style={{ opacity: imgLoaded ? 0 : 1 }} />
       <Image
-        src={isNight ? "/kaba/night.png" : "/kaba/day.png"}
+        src="/kaba/update.jpg"
         alt=""
         fill
         priority
-        quality={75}
+        quality={85}
         sizes="100vw"
         onLoad={() => setImgLoaded(true)}
         style={{
