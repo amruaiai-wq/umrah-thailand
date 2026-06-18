@@ -20,9 +20,19 @@ const overlayMap: Record<Phase, string> = {
   sunset: "rgba(110,35,0,0.46)",
 };
 
+// Fewer particles, same visual effect
+const RINGS = [
+  { rx: 0.10, ry: 0.056, count: 14, speed: 0.28, size: 1.4, alpha: 0.55 },
+  { rx: 0.16, ry: 0.088, count: 22, speed: 0.22, size: 1.7, alpha: 0.45 },
+  { rx: 0.22, ry: 0.120, count: 30, speed: 0.17, size: 2.0, alpha: 0.36 },
+  { rx: 0.28, ry: 0.150, count: 38, speed: 0.13, size: 1.5, alpha: 0.26 },
+  { rx: 0.34, ry: 0.180, count: 44, speed: 0.10, size: 1.1, alpha: 0.18 },
+];
+
 export default function KaabaBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<Phase>("day");
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => { setPhase(getMeccaPhase()); }, []);
 
@@ -40,57 +50,52 @@ export default function KaabaBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    const rings = [
-      { rx: 0.10, ry: 0.056, count: 24, speed: 0.28, size: 1.3, alpha: 0.70 },
-      { rx: 0.16, ry: 0.088, count: 38, speed: 0.22, size: 1.6, alpha: 0.58 },
-      { rx: 0.22, ry: 0.120, count: 54, speed: 0.17, size: 1.9, alpha: 0.46 },
-      { rx: 0.28, ry: 0.150, count: 70, speed: 0.13, size: 1.4, alpha: 0.34 },
-      { rx: 0.34, ry: 0.180, count: 88, speed: 0.10, size: 1.1, alpha: 0.22 },
-    ];
-
     let t = 0;
     let raf: number;
+    let lastFrame = 0;
 
-    function draw() {
+    function draw(ts: number) {
       if (!canvas || !ctx) return;
+
+      // ~30fps cap — avoids burning CPU at 60fps for a slow animation
+      if (ts - lastFrame < 34) { raf = requestAnimationFrame(draw); return; }
+      lastFrame = ts;
+
+      // Pause animation when tab is hidden
+      if (document.hidden) { raf = requestAnimationFrame(draw); return; }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       t += 1;
+
       const cx = canvas.width / 2;
       const cy = canvas.height * 0.50;
+      const isMobile = canvas.width < 640;
 
-      rings.forEach(({ rx, ry, count, speed, size, alpha }) => {
+      ctx.fillStyle = "#ffffff";
+
+      // Batch all particles per ring into a single fill() call
+      RINGS.forEach(({ rx, ry, count, speed, size, alpha }) => {
+        const n = isMobile ? Math.ceil(count * 0.55) : count;
         const a = canvas.width * rx;
         const b = canvas.height * ry;
-        for (let i = 0; i < count; i++) {
-          const angle = (i / count) * Math.PI * 2 + (t * speed * 0.001);
+
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const angle = (i / n) * Math.PI * 2 + t * speed * 0.001;
           const x = cx + a * Math.cos(angle);
           const y = cy + b * Math.sin(angle);
-          const pulse = 0.45 + 0.55 * Math.abs(Math.sin(i * 1.4 + t * 0.009));
-          const a2 = alpha * pulse;
-
-          ctx.beginPath();
+          ctx.moveTo(x + size, y);
           ctx.arc(x, y, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${a2})`;
-          ctx.fill();
-
-          if (i % 4 === 0) {
-            const pa = angle - 0.055;
-            const px = cx + a * Math.cos(pa);
-            const py = cy + b * Math.sin(pa);
-            ctx.beginPath();
-            ctx.moveTo(px, py);
-            ctx.lineTo(x, y);
-            ctx.strokeStyle = `rgba(255,255,255,${a2 * 0.35})`;
-            ctx.lineWidth = size * 0.7;
-            ctx.stroke();
-          }
         }
+        ctx.fill();
       });
 
+      ctx.globalAlpha = 1;
       raf = requestAnimationFrame(draw);
     }
 
-    draw();
+    raf = requestAnimationFrame(draw);
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
 
@@ -98,12 +103,22 @@ export default function KaabaBackground() {
 
   return (
     <div className="kaaba-bg-wrap">
+      {/* Placeholder shown while image loads */}
+      <div className="kaaba-placeholder" style={{ opacity: imgLoaded ? 0 : 1 }} />
       <Image
         src={isNight ? "/kaba/night.png" : "/kaba/day.png"}
         alt=""
         fill
         priority
-        style={{ objectFit: "cover", objectPosition: "center 30%" }}
+        quality={75}
+        sizes="100vw"
+        onLoad={() => setImgLoaded(true)}
+        style={{
+          objectFit: "cover",
+          objectPosition: "center 30%",
+          opacity: imgLoaded ? 1 : 0,
+          transition: "opacity 0.6s ease",
+        }}
       />
       <div className="kaaba-overlay" style={{ background: overlayMap[phase] }} />
       <canvas ref={canvasRef} className="kaaba-canvas" />
