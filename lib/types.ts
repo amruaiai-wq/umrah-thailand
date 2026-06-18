@@ -26,6 +26,7 @@ export interface JourneyStop {
   t: string;
   ar: string;
   d: string;
+  anchor?: string;
 }
 
 export interface Article {

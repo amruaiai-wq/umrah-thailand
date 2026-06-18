@@ -155,6 +155,8 @@ header.site.scrolled .burger span{background:var(--ink)}
 .jbtn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
 .jbtn:disabled{opacity:.3;cursor:not-allowed}
 .jstep-label{color:rgba(255,255,255,.6);font-size:.88rem}
+.journey-detail-btn{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:9px 20px;border-radius:50px;border:1.5px solid rgba(201,162,75,.45);color:var(--gold-light);font-size:.85rem;font-weight:600;font-family:'Anuphan',sans-serif;text-decoration:none;transition:.25s;background:rgba(201,162,75,.07)}
+.journey-detail-btn:hover{background:rgba(201,162,75,.16);border-color:var(--gold-light);transform:translateY(2px)}
 
 /* steps */
 .steps-wrap{padding:80px 0}
