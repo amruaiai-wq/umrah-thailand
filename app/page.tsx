@@ -108,7 +108,7 @@ export default async function HomePage() {
       <section className="sec sec-gray">
         <div className="wrap">
           <div className="sec-head fade-up">
-            <span className="eyebrow">ทำไมต้องเราะห์ Thailand</span>
+            <span className="eyebrow">ทำไมต้อง "Umrah Thailand"</span>
             <h2>เชื่อถือได้ ไม่ทิ้ง ทำงานมืออาชีพ</h2>
             <p>เราดูแลคุณตั้งแต่วันแรกที่ติดต่อ จนกลับถึงบ้านอย่างปลอดภัย</p>
           </div>
