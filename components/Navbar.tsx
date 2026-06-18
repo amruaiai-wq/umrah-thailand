@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 const LINKS = [
   { href: "/", label: "หน้าหลัก" },
   { href: "/umrah", label: "คู่มืออุมเราะห์" },
+  { href: "/plan", label: "สถานที่ประวัติศาสตร์" },
   { href: "/articles", label: "บทความ" },
   { href: "/about", label: "เกี่ยวกับเรา" },
   { href: "/contact", label: "ติดต่อ" },

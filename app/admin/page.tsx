@@ -6,6 +6,7 @@ import { Article, Sponsor } from "@/lib/types";
 import { GRADIENTS, CATEGORIES } from "@/data/seed";
 import { isSupabaseConfigured, getSupabaseBrowser } from "@/lib/supabase-client";
 import { useAdminData } from "@/components/useAdminData";
+import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
 
 const DEMO_PASS = "admin1234";
 
@@ -62,7 +63,8 @@ export default function AdminPage() {
 
 function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }) {
   const d = useAdminData();
-  const [tab, setTab] = useState<"articles" | "ads">("articles");
+  const { prices, save: savePrices, reset: resetPrices } = usePlannerPrices();
+  const [tab, setTab] = useState<"articles" | "ads" | "prices">("articles");
   const [modal, setModal] = useState<null | { type: "article" | "ad"; item?: Article | Sponsor }>(null);
 
   const pubArticles = d.articles.filter((a) => a.published).length;
@@ -98,9 +100,12 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
           <div className="dash-tabs">
             <button className={`dtab ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>📝 บทความ</button>
             <button className={`dtab ${tab === "ads" ? "active" : ""}`} onClick={() => setTab("ads")}>📢 โฆษณา</button>
+            <button className={`dtab ${tab === "prices" ? "active" : ""}`} onClick={() => setTab("prices")}>💰 ราคาแพ็กเกจ</button>
           </div>
 
-          {tab === "articles" ? (
+          {tab === "prices" ? (
+            <PricesPanel prices={prices} onSave={savePrices} onReset={resetPrices} />
+          ) : tab === "articles" ? (
             <div>
               <div className="panel-head">
                 <h3>จัดการบทความ</h3>
@@ -153,6 +158,110 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
           onSave={(data, id) => { d.saveSponsor(data, id); setModal(null); }} />
       )}
     </main>
+  );
+}
+
+function PricesPanel({
+  prices, onSave, onReset,
+}: { prices: PlannerPrices; onSave: (p: PlannerPrices) => void; onReset: () => void }) {
+  const [draft, setDraft] = useState<PlannerPrices>(JSON.parse(JSON.stringify(prices)));
+  const [saved, setSaved] = useState(false);
+
+  function setNum(section: keyof PlannerPrices, idx: number, field: string, val: string) {
+    const n = parseInt(val, 10);
+    if (isNaN(n) || n < 0) return;
+    setDraft((prev) => {
+      const next = JSON.parse(JSON.stringify(prev)) as PlannerPrices;
+      if (section === "visaPrice") return { ...next, visaPrice: n };
+      (next[section] as Record<string, number | string>[])[idx][field] = n;
+      return next;
+    });
+    setSaved(false);
+  }
+
+  function doSave() {
+    onSave(draft);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  function doReset() {
+    if (!confirm("รีเซ็ตราคาทั้งหมดกลับค่าเริ่มต้น?")) return;
+    onReset();
+    setDraft(JSON.parse(JSON.stringify(prices)));
+  }
+
+  const sections: { label: string; key: keyof PlannerPrices; field: string; field2?: string }[] = [
+    { label: "ตั๋วเครื่องบิน", key: "airlines", field: "price" },
+    { label: "การเดินทางภายใน", key: "transports", field: "price" },
+    { label: "ไกด์นำทาง", key: "guides", field: "price" },
+    { label: "อาหาร", key: "foodOptions", field: "pricePerDay" },
+    { label: "กิจกรรมเสริม", key: "extras", field: "price" },
+  ];
+
+  return (
+    <div>
+      <div className="panel-head">
+        <h3>ราคาแพ็กเกจอุมเราะห์</h3>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button className="btn btn-outline" style={{ fontSize: ".85rem" }} onClick={doReset}>รีเซ็ต</button>
+          <button className="btn btn-emerald" style={{ fontSize: ".85rem" }} onClick={doSave}>
+            {saved ? "✓ บันทึกแล้ว" : "บันทึก"}
+          </button>
+        </div>
+      </div>
+      <p style={{ color: "var(--muted)", fontSize: ".88rem", marginBottom: 20 }}>
+        ราคาจะแสดงในหน้าคำนวณค่าใช้จ่าย (/planner) ทันทีหลังบันทึก
+      </p>
+
+      {/* VISA */}
+      <div className="price-section">
+        <h4 className="price-section-title">วีซ่า</h4>
+        <div className="price-row">
+          <span className="price-row-name">ค่าวีซ่าต่อคน</span>
+          <input
+            type="number" className="price-input"
+            value={draft.visaPrice}
+            onChange={(e) => setDraft((prev) => ({ ...prev, visaPrice: parseInt(e.target.value, 10) || 0 }))}
+          />
+          <span className="price-unit">฿</span>
+        </div>
+      </div>
+
+      {/* HOTEL STARS */}
+      <div className="price-section">
+        <h4 className="price-section-title">ระดับโรงแรม (ราคาต่อห้องต่อคืน)</h4>
+        {draft.hotelStars.map((h, i) => (
+          <div className="price-row" key={i}>
+            <span className="price-row-name">{h.label}</span>
+            <span style={{ fontSize: ".8rem", color: "var(--muted)" }}>มักกะฮ์</span>
+            <input type="number" className="price-input" value={h.makkah}
+              onChange={(e) => setNum("hotelStars", i, "makkah", e.target.value)} />
+            <span style={{ fontSize: ".8rem", color: "var(--muted)" }}>มะดีนะฮ์</span>
+            <input type="number" className="price-input" value={h.madinah}
+              onChange={(e) => setNum("hotelStars", i, "madinah", e.target.value)} />
+            <span className="price-unit">฿</span>
+          </div>
+        ))}
+      </div>
+
+      {sections.map(({ label, key, field }) => (
+        <div className="price-section" key={key}>
+          <h4 className="price-section-title">{label}</h4>
+          {(draft[key] as Record<string, string | number>[]).map((item, i) => (
+            <div className="price-row" key={i}>
+              <span className="price-row-name">{item.name as string}</span>
+              <input
+                type="number" className="price-input"
+                value={item[field] as number}
+                onChange={(e) => setNum(key, i, field, e.target.value)}
+              />
+              <span className="price-unit">฿</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
 

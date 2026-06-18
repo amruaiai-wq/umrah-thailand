@@ -3,6 +3,21 @@
 export default function FloatingContact() {
   return (
     <div className="float-btns">
+      {/* ปุ่มคำนวณค่าใช้จ่าย */}
+      <a
+        href="/planner"
+        className="float-btn float-planner"
+        aria-label="คำนวณค่าอุมเราะห์"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2"/>
+          <line x1="8" y1="6" x2="16" y2="6"/>
+          <line x1="8" y1="10" x2="12" y2="10"/>
+          <line x1="8" y1="14" x2="16" y2="14"/>
+          <line x1="8" y1="18" x2="12" y2="18"/>
+        </svg>
+        <span>คำนวณค่าใช้จ่าย</span>
+      </a>
       {/* แก้ลิงก์ LINE OA ตรงนี้ */}
       <a
         href="https://line.me/R/ti/p/@umrahthailand"
@@ -18,7 +33,7 @@ export default function FloatingContact() {
       </a>
       {/* แก้ลิงก์ Facebook Page ตรงนี้ */}
       <a
-        href="https://m.me/umrahthailand"
+        href="https://www.facebook.com/umrahthailand/"
         target="_blank"
         rel="noopener noreferrer"
         className="float-btn float-msng"
