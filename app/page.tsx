@@ -108,23 +108,25 @@ export default async function HomePage() {
       <section className="sec sec-gray">
         <div className="wrap">
           <div className="sec-head fade-up">
-            <span className="eyebrow">ทำไมต้อง "Umrah Thailand"</span>
+            <span className="eyebrow">ทำไมต้อง Umrah Thailand</span>
             <h2>เชื่อถือได้ ไม่ทิ้ง ทำงานมืออาชีพ</h2>
             <p>เราดูแลคุณตั้งแต่วันแรกที่ติดต่อ จนกลับถึงบ้านอย่างปลอดภัย</p>
           </div>
-          <div className="vm-grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
-            <div className="vm-card fade-up">
-              <div className="ic">
-                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="why-grid">
+            <div className="why-card fade-up">
+              <span className="why-num">01</span>
+              <div className="why-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
               </div>
               <h4>เชื่อถือได้</h4>
               <p>ดำเนินงานโดยทีมที่มีประสบการณ์ พร้อมผลงานที่จับต้องได้ ไม่ใช่แค่คำสัญญา</p>
             </div>
-            <div className="vm-card fade-up" style={{ transitionDelay: "100ms" }}>
-              <div className="ic">
-                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="why-card fade-up" style={{ transitionDelay: "100ms" }}>
+              <span className="why-num">02</span>
+              <div className="why-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
                   <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
@@ -133,9 +135,10 @@ export default async function HomePage() {
               <h4>ไม่ทิ้งลูกค้า</h4>
               <p>ติดตามดูแลทุกขั้นตอน ตั้งแต่เตรียมเอกสารวีซ่า จนเดินทางกลับถึงบ้าน</p>
             </div>
-            <div className="vm-card fade-up" style={{ transitionDelay: "200ms" }}>
-              <div className="ic">
-                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="why-card fade-up" style={{ transitionDelay: "200ms" }}>
+              <span className="why-num">03</span>
+              <div className="why-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="7" width="20" height="14" rx="2"/>
                   <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
                   <line x1="12" y1="12" x2="12" y2="16"/>
