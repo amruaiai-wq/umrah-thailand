@@ -270,23 +270,45 @@ function slugify(s: string) {
 }
 
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
-  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: CATEGORIES[0], date: "", ex: "", body: "", img: GRADIENTS[0], published: true });
+  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: CATEGORIES[0], date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
+  const [imagesStr, setImagesStr] = useState<string>((item?.images ?? []).join("\n"));
   const upd = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
   const save = () => {
     if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
-    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
+    const images = imagesStr.split("\n").map((s) => s.trim()).filter(Boolean);
+    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้", images }, item?.id);
   };
   return (
     <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card">
+      <div className="modal-card" style={{ maxWidth: 680 }}>
         <div className="modal-head"><h3>{item ? "แก้ไขบทความ" : "เพิ่มบทความ"}</h3><button className="modal-x" onClick={onClose}>×</button></div>
         <div className="modal-body">
           <div className="field"><label>หัวข้อบทความ</label><input value={f.title} onChange={(e) => upd("title", e.target.value)} placeholder="ชื่อบทความ" /></div>
-          <div className="field"><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
-          <div className="field"><label>วันที่</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
-          <div className="field"><label>เนื้อหาย่อ</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="คำโปรยสั้น ๆ" /></div>
-          <div className="field"><label>เนื้อหาเต็ม</label><textarea value={f.body} onChange={(e) => upd("body", e.target.value)} placeholder="เนื้อหาบทความ (เว้นบรรทัดเพื่อขึ้นย่อหน้าใหม่)" style={{ minHeight: 140 }} /></div>
-          <div className="field"><label>สีปก</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
+          <div style={{ display: "flex", gap: 14 }}>
+            <div className="field" style={{ flex: 1 }}><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+            <div className="field" style={{ flex: 1 }}><label>วันที่</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
+          </div>
+          <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>
+          <div className="field">
+            <label>เนื้อหาบทความ</label>
+            <div className="body-hint">
+              <span><b>##</b> หัวข้อหลัก</span>
+              <span><b>###</b> หัวข้อรอง</span>
+              <span><b>&gt;</b> ข้อความสำคัญ (highlight)</span>
+              <span><b>-</b> รายการ</span>
+              <span><b>[img]</b> วางรูปตรงนี้</span>
+            </div>
+            <textarea value={f.body} onChange={(e) => upd("body", e.target.value)}
+              placeholder={"## อุมเราะห์คืออะไร\n\nเนื้อหาย่อหน้า...\n\n[img]\n\n> ข้อความสำคัญจะขึ้น highlight อัตโนมัติ\n\n- รายการที่ 1\n- รายการที่ 2"}
+              style={{ minHeight: 220, fontFamily: "monospace", fontSize: ".85rem" }} />
+          </div>
+          <div className="field">
+            <label>รูปภาพบทความ <small style={{ color: "var(--muted)", fontWeight: 400 }}>(URL ทีละบรรทัด — รูปแรก = ภาพปก, ที่เหลือแทรกในเนื้อหาที่ [img])</small></label>
+            <textarea value={imagesStr} onChange={(e) => setImagesStr(e.target.value)}
+              placeholder={"https://example.com/image1.jpg\nhttps://example.com/image2.jpg"}
+              style={{ minHeight: 80, fontFamily: "monospace", fontSize: ".82rem" }} />
+          </div>
+          <div className="field"><label>สีปก (fallback ถ้าไม่มีรูป)</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
           <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
         </div>
       </div>

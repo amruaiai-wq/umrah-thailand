@@ -38,6 +38,7 @@ export interface Article {
   ex: string;
   body?: string;
   img: string;
+  images?: string[];
   published: boolean;
 }
 

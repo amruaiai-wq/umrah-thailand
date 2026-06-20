@@ -5,7 +5,13 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(Copy-Item \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\public\\\\logo-mark-192.png\" \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\app\\\\icon.png\")"
+      "Bash(Copy-Item \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\public\\\\logo-mark-192.png\" \"c:\\\\Users\\\\HP EliteBook 840 G8\\\\Desktop\\\\projects\\\\umrah-thailand\\\\app\\\\icon.png\")",
+      "Bash(git rm *)",
+      "Bash(node -e ' *)",
+      "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
+      "Bash(Write-Output \"cleared\")",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ]
   }
 }
