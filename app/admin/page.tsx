@@ -7,6 +7,7 @@ import { GRADIENTS, CATEGORIES } from "@/data/seed";
 import { isSupabaseConfigured, getSupabaseBrowser } from "@/lib/supabase-client";
 import { useAdminData } from "@/components/useAdminData";
 import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
+import ImageUploadInput from "@/components/ImageUploadInput";
 
 const DEMO_PASS = "admin1234";
 
@@ -271,12 +272,10 @@ function slugify(s: string) {
 
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
   const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: CATEGORIES[0], date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
-  const [imagesStr, setImagesStr] = useState<string>((item?.images ?? []).join("\n"));
   const upd = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
   const save = () => {
     if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
-    const images = imagesStr.split("\n").map((s) => s.trim()).filter(Boolean);
-    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้", images }, item?.id);
+    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
   };
   return (
     <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -303,12 +302,16 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
               style={{ minHeight: 220, fontFamily: "monospace", fontSize: ".85rem" }} />
           </div>
           <div className="field">
-            <label>รูปภาพบทความ <small style={{ color: "var(--muted)", fontWeight: 400 }}>(URL ทีละบรรทัด — รูปแรก = ภาพปก, ที่เหลือแทรกในเนื้อหาที่ [img])</small></label>
-            <textarea value={imagesStr} onChange={(e) => setImagesStr(e.target.value)}
-              placeholder={"https://example.com/image1.jpg\nhttps://example.com/image2.jpg"}
-              style={{ minHeight: 80, fontFamily: "monospace", fontSize: ".82rem" }} />
+            <label>
+              รูปภาพ
+              <small style={{ color: "var(--muted)", fontWeight: 400, marginLeft: 6 }}>รูปแรก = ภาพปก · ที่เหลือแทรกในเนื้อหาที่ [img]</small>
+            </label>
+            <ImageUploadInput
+              urls={f.images ?? []}
+              onChange={(imgs) => setF((p) => ({ ...p, images: imgs }))}
+            />
           </div>
-          <div className="field"><label>สีปก (fallback ถ้าไม่มีรูป)</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
+          <div className="field"><label>สีปก (ใช้ถ้าไม่มีรูป)</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
           <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
         </div>
       </div>

@@ -554,6 +554,23 @@ footer.site{background:#0a0a0a;color:rgba(255,255,255,.6);padding:60px 0 26px;ma
 .sidebar-cta-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#fff}
 .art-sidebar-cta p{font-size:.88rem;color:rgba(255,255,255,.75);margin-bottom:16px;line-height:1.6}
 
+/* Image upload */
+.img-upload-wrap{display:flex;flex-direction:column;gap:10px}
+.img-preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.img-preview-item{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--bg);border:1px solid var(--line)}
+.img-preview-item img{width:100%;height:100%;object-fit:cover;display:block}
+.img-cover-badge{position:absolute;top:5px;left:5px;background:var(--orange);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:4px;pointer-events:none}
+.img-actions{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(0,0,0,.55);opacity:0;transition:.2s}
+.img-preview-item:hover .img-actions{opacity:1}
+.img-actions button{flex:1;background:none;border:none;color:#fff;cursor:pointer;padding:5px 0;font-size:.85rem;transition:.15s}
+.img-actions button:hover{background:rgba(255,255,255,.15)}
+.img-actions button:disabled{opacity:.3;cursor:default}
+.img-del{color:#ff9b9b!important}
+.img-upload-btn{display:flex!important;align-items:center;justify-content:center;gap:8px;background:var(--bg)!important;border:1.5px dashed var(--line)!important;color:var(--muted)!important;width:100%;padding:12px!important;border-radius:10px!important;transition:.2s!important;font-size:.9rem!important}
+.img-upload-btn:hover:not(:disabled){border-color:var(--orange)!important;color:var(--orange)!important;background:rgba(255,107,53,.04)!important}
+.img-upload-btn:disabled{opacity:.6;cursor:wait}
+.img-demo-note{font-size:.75rem;color:var(--muted);margin:0;line-height:1.5}
+
 /* Admin body hint */
 .body-hint{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .body-hint span{font-size:.76rem;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--muted);font-family:monospace}
