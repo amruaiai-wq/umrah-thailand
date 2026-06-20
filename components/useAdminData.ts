@@ -49,6 +49,17 @@ export function useAdminData() {
   // ----- Articles -----
   const saveArticle = async (a: Partial<Article>, id?: number): Promise<string | null> => {
     if (cloud && supabase) {
+      // Normalize payload: rename any legacy camelCase keys → snake_case
+      const normalize = (obj: Record<string, unknown>): Record<string, unknown> => {
+        const out = { ...obj };
+        // publishAt → publish_at (handle old cached data)
+        if ("publishAt" in out) {
+          if (!out.publish_at) out.publish_at = out.publishAt;
+          delete out.publishAt;
+        }
+        return out;
+      };
+
       // Strip unknown/optional columns progressively on failure
       const tryInsertOrUpdate = async (payload: Record<string, unknown>): Promise<string | null> => {
         let error;
@@ -58,19 +69,20 @@ export function useAdminData() {
           ({ error } = await supabase!.from("articles").insert([{ ...payload, published: payload.published ?? true }]));
         }
         if (!error) return null;
-        // Retry without the failing optional column
-        if (error.message?.includes("images") || (error.code === "42703" && error.message?.includes("images"))) {
+        const msg = error.message ?? "";
+        // Retry without the failing optional column (handles both camelCase and snake_case in error msg)
+        if (msg.includes("images")) {
           const { images: _, ...rest } = payload;
           return tryInsertOrUpdate(rest);
         }
-        if (error.message?.includes("publish_at") || (error.code === "42703" && error.message?.includes("publish_at"))) {
-          const { publish_at: _, ...rest } = payload;
+        if (msg.includes("publish_at") || msg.includes("publishAt")) {
+          const { publish_at: _p, publishAt: _a, ...rest } = payload as Record<string, unknown> & { publish_at?: unknown; publishAt?: unknown };
           return tryInsertOrUpdate(rest);
         }
-        return error.message;
+        return msg;
       };
 
-      const err = await tryInsertOrUpdate({ ...a } as Record<string, unknown>);
+      const err = await tryInsertOrUpdate(normalize({ ...a } as Record<string, unknown>));
       if (err) { await refresh(); return err; }
     } else {
       const list = [...articles];
