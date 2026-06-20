@@ -26,7 +26,7 @@ export async function getArticles(onlyPublished = true): Promise<Article[]> {
   const sb = getServerClient();
   if (!sb) {
     const list = onlyPublished
-      ? seedArticles.filter((a) => a.published && (!a.publishAt || new Date(a.publishAt) <= now))
+      ? seedArticles.filter((a) => a.published && (!a.publish_at || new Date(a.publish_at) <= now))
       : seedArticles;
     return list;
   }
@@ -36,7 +36,7 @@ export async function getArticles(onlyPublished = true): Promise<Article[]> {
     query = query.or(`publish_at.is.null,publish_at.lte.${now.toISOString()}`);
   }
   const { data, error } = await query;
-  if (error || !data) return seedArticles.filter((a) => a.published && (!a.publishAt || new Date(a.publishAt) <= now));
+  if (error || !data) return seedArticles.filter((a) => a.published && (!a.publish_at || new Date(a.publish_at) <= now));
   return data as Article[];
 }
 

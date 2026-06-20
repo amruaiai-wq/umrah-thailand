@@ -49,28 +49,29 @@ export function useAdminData() {
   // ----- Articles -----
   const saveArticle = async (a: Partial<Article>, id?: number): Promise<string | null> => {
     if (cloud && supabase) {
-      let error;
-      if (id) {
-        ({ error } = await supabase.from("articles").update(a).eq("id", id));
-      } else {
-        ({ error } = await supabase.from("articles").insert([{ ...a, published: a.published ?? true }]));
-      }
-      if (error) {
-        // Retry without images if column doesn't exist yet
-        if (error.message?.includes("images") || error.code === "42703") {
-          const { images: _imgs, ...rest } = a;
-          if (id) {
-            const { error: e2 } = await supabase.from("articles").update(rest).eq("id", id);
-            if (e2) { await refresh(); return e2.message; }
-          } else {
-            const { error: e2 } = await supabase.from("articles").insert([{ ...rest, published: rest.published ?? true }]);
-            if (e2) { await refresh(); return e2.message; }
-          }
+      // Strip unknown/optional columns progressively on failure
+      const tryInsertOrUpdate = async (payload: Record<string, unknown>): Promise<string | null> => {
+        let error;
+        if (id) {
+          ({ error } = await supabase!.from("articles").update(payload).eq("id", id));
         } else {
-          await refresh();
-          return error.message;
+          ({ error } = await supabase!.from("articles").insert([{ ...payload, published: payload.published ?? true }]));
         }
-      }
+        if (!error) return null;
+        // Retry without the failing optional column
+        if (error.message?.includes("images") || (error.code === "42703" && error.message?.includes("images"))) {
+          const { images: _, ...rest } = payload;
+          return tryInsertOrUpdate(rest);
+        }
+        if (error.message?.includes("publish_at") || (error.code === "42703" && error.message?.includes("publish_at"))) {
+          const { publish_at: _, ...rest } = payload;
+          return tryInsertOrUpdate(rest);
+        }
+        return error.message;
+      };
+
+      const err = await tryInsertOrUpdate({ ...a } as Record<string, unknown>);
+      if (err) { await refresh(); return err; }
     } else {
       const list = [...articles];
       if (id) {

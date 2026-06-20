@@ -120,7 +120,7 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
               </div>
               <div className="admin-table">
                 {d.articles.map((a) => {
-                  const isScheduled = a.published && a.publishAt && new Date(a.publishAt) > new Date();
+                  const isScheduled = a.published && a.publish_at && new Date(a.publish_at) > new Date();
                   return (
                     <div className="arow" key={a.id}>
                       <div className="thumb" style={{ background: a.img }} />
@@ -128,7 +128,7 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
                         <b>{a.title}</b>
                         <small>
                           <span className="tagcat">{a.cat}</span> · {a.date}
-                          {isScheduled && <span className="sched-badge">⏰ {new Date(a.publishAt!).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })}</span>}
+                          {isScheduled && <span className="sched-badge">⏰ {new Date(a.publish_at!).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })}</span>}
                         </small>
                       </div>
                       <button
@@ -357,11 +357,11 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
             <label>ตั้งเวลาเผยแพร่ <small style={{ color: "var(--muted)", fontWeight: 400 }}>(ว่าง = เผยแพร่ทันที)</small></label>
             <input
               type="datetime-local"
-              value={f.publishAt ? f.publishAt.slice(0, 16) : ""}
-              onChange={(e) => upd("publishAt", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+              value={f.publish_at ? f.publish_at.slice(0, 16) : ""}
+              onChange={(e) => upd("publish_at", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
             />
-            {f.publishAt && new Date(f.publishAt) > new Date() && (
-              <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publishAt).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
+            {f.publish_at && new Date(f.publish_at) > new Date() && (
+              <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publish_at).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
             )}
           </div>
           <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>
@@ -407,12 +407,25 @@ function SupabaseMigrationNotice() {
       {show && (
         <div className="migration-sql">
           <p style={{ marginBottom: 8, fontSize: ".82rem", color: "#ccc" }}>รันใน Supabase → SQL Editor:</p>
-          <pre>{`ALTER TABLE articles\n  ADD COLUMN IF NOT EXISTS images text[] DEFAULT '{}';`}</pre>
+          <pre>{`-- 1. เพิ่มคอลัมน์รูปภาพ
+ALTER TABLE articles
+  ADD COLUMN IF NOT EXISTS images text[] DEFAULT '{}';
+
+-- 2. เพิ่มคอลัมน์ตั้งเวลาเผยแพร่
+ALTER TABLE articles
+  ADD COLUMN IF NOT EXISTS publish_at timestamptz;
+
+-- 3. Storage policy (อนุญาต upload รูป)
+CREATE POLICY "allow_upload" ON storage.objects
+  FOR INSERT TO anon, authenticated
+  WITH CHECK (bucket_id = 'article-images');
+
+CREATE POLICY "allow_read" ON storage.objects
+  FOR SELECT TO anon, authenticated
+  USING (bucket_id = 'article-images');`}</pre>
           <p style={{ marginTop: 10, fontSize: ".82rem", color: "#bbb", lineHeight: 1.7 }}>
             จากนั้นใน Dashboard → Storage:<br />
-            1. New Bucket → ชื่อ <b>article-images</b> → เปิด Public<br />
-            2. Policies → Allow public SELECT (read)<br />
-            3. Allow authenticated INSERT (upload)
+            สร้าง Bucket ชื่อ <b>article-images</b> → เปิด Public แล้วรัน SQL ด้านบน
           </p>
         </div>
       )}

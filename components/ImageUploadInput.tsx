@@ -18,6 +18,7 @@ const toBase64 = (file: File): Promise<string> =>
 export default function ImageUploadInput({ urls, onChange }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [rlsWarning, setRlsWarning] = useState(false);
   const cloud = isSupabaseConfigured();
 
   const ensureBucket = async (sb: ReturnType<typeof getSupabaseBrowser>) => {
@@ -42,6 +43,16 @@ export default function ImageUploadInput({ urls, onChange }: Props) {
         if (!error) {
           const { data } = sb.storage.from("article-images").getPublicUrl(path);
           newUrls.push(data.publicUrl);
+        } else if (
+          error.message?.includes("row-level security") ||
+          error.message?.includes("policy") ||
+          error.message?.includes("Unauthorized") ||
+          error.statusCode === "403"
+        ) {
+          // RLS policy not set — silently fall back to base64
+          const b64 = await toBase64(file);
+          newUrls.push(b64);
+          setRlsWarning(true);
         } else {
           alert("อัพโหลดรูปไม่สำเร็จ: " + error.message);
         }
@@ -102,6 +113,13 @@ export default function ImageUploadInput({ urls, onChange }: Props) {
 
       {!cloud && urls.length > 0 && (
         <p className="img-demo-note">โหมดทดลอง: รูปเก็บในเบราว์เซอร์นี้เท่านั้น ตั้งค่า Supabase เพื่อเก็บถาวร</p>
+      )}
+      {rlsWarning && (
+        <div className="img-rls-warn">
+          <b>⚠️ Storage RLS ปิดกั้น</b> — รูปถูกบันทึกเป็น base64 ชั่วคราว<br />
+          เปิด Supabase → Storage → article-images → Policies แล้วเพิ่ม:<br />
+          <code>INSERT: (bucket_id = &apos;article-images&apos;)</code> สำหรับ <code>anon</code> หรือ <code>authenticated</code>
+        </div>
       )}
     </div>
   );

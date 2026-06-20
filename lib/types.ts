@@ -40,7 +40,7 @@ export interface Article {
   img: string;
   images?: string[];
   published: boolean;
-  publishAt?: string; // ISO datetime — if set and in future, hidden from public
+  publish_at?: string; // ISO datetime — if set and in future, hidden from public
 }
 
 export interface Sponsor {
