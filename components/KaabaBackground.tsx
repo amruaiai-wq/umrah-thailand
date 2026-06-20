@@ -2,23 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-type Phase = "night" | "dawn" | "day" | "sunset";
-
-function getMeccaPhase(): Phase {
-  const now = new Date();
-  const h = (now.getUTCHours() + 3) % 24 + now.getUTCMinutes() / 60;
-  if (h >= 5 && h < 6.5) return "dawn";
-  if (h >= 6.5 && h < 17.5) return "day";
-  if (h >= 17.5 && h < 19.5) return "sunset";
-  return "night";
-}
-
-const overlayMap: Record<Phase, string> = {
-  night:  "rgba(2,6,20,0.58)",
-  dawn:   "rgba(50,15,70,0.48)",
-  day:    "rgba(5,10,28,0.38)",
-  sunset: "rgba(110,35,0,0.46)",
-};
+const OVERLAY = "rgba(5,10,28,0.42)";
 
 // Fewer particles, same visual effect
 const RINGS = [
@@ -31,10 +15,7 @@ const RINGS = [
 
 export default function KaabaBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [phase, setPhase] = useState<Phase>("day");
   const [imgLoaded, setImgLoaded] = useState(false);
-
-  useEffect(() => { setPhase(getMeccaPhase()); }, []);
 
 
   useEffect(() => {
@@ -118,7 +99,7 @@ export default function KaabaBackground() {
           transition: "opacity 0.6s ease",
         }}
       />
-      <div className="kaaba-overlay" style={{ background: overlayMap[phase] }} />
+      <div className="kaaba-overlay" style={{ background: OVERLAY }} />
       <canvas ref={canvasRef} className="kaaba-canvas" />
     </div>
   );

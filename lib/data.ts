@@ -22,15 +22,21 @@ function getServerClient() {
 
 // --- Articles ---
 export async function getArticles(onlyPublished = true): Promise<Article[]> {
+  const now = new Date();
   const sb = getServerClient();
   if (!sb) {
-    const list = onlyPublished ? seedArticles.filter((a) => a.published) : seedArticles;
+    const list = onlyPublished
+      ? seedArticles.filter((a) => a.published && (!a.publishAt || new Date(a.publishAt) <= now))
+      : seedArticles;
     return list;
   }
   let query = sb.from("articles").select("*").order("id", { ascending: false });
-  if (onlyPublished) query = query.eq("published", true);
+  if (onlyPublished) {
+    query = query.eq("published", true);
+    query = query.or(`publish_at.is.null,publish_at.lte.${now.toISOString()}`);
+  }
   const { data, error } = await query;
-  if (error || !data) return seedArticles.filter((a) => a.published);
+  if (error || !data) return seedArticles.filter((a) => a.published && (!a.publishAt || new Date(a.publishAt) <= now));
   return data as Article[];
 }
 

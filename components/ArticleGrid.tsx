@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Article } from "@/lib/types";
-import { CATEGORIES } from "@/data/seed";
+import { useCategories } from "@/lib/useCategories";
 
 export function ArticleCard({ a }: { a: Article }) {
   return (
@@ -21,6 +21,7 @@ export function ArticleCard({ a }: { a: Article }) {
 }
 
 export default function ArticleGrid({ articles }: { articles: Article[] }) {
+  const { cats: CATEGORIES } = useCategories();
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
 

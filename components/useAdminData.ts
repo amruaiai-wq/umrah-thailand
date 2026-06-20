@@ -47,10 +47,30 @@ export function useAdminData() {
   useEffect(() => { refresh(); }, [refresh]);
 
   // ----- Articles -----
-  const saveArticle = async (a: Partial<Article>, id?: number) => {
+  const saveArticle = async (a: Partial<Article>, id?: number): Promise<string | null> => {
     if (cloud && supabase) {
-      if (id) await supabase.from("articles").update(a).eq("id", id);
-      else await supabase.from("articles").insert([{ ...a, published: true }]);
+      let error;
+      if (id) {
+        ({ error } = await supabase.from("articles").update(a).eq("id", id));
+      } else {
+        ({ error } = await supabase.from("articles").insert([{ ...a, published: a.published ?? true }]));
+      }
+      if (error) {
+        // Retry without images if column doesn't exist yet
+        if (error.message?.includes("images") || error.code === "42703") {
+          const { images: _imgs, ...rest } = a;
+          if (id) {
+            const { error: e2 } = await supabase.from("articles").update(rest).eq("id", id);
+            if (e2) { await refresh(); return e2.message; }
+          } else {
+            const { error: e2 } = await supabase.from("articles").insert([{ ...rest, published: rest.published ?? true }]);
+            if (e2) { await refresh(); return e2.message; }
+          }
+        } else {
+          await refresh();
+          return error.message;
+        }
+      }
     } else {
       const list = [...articles];
       if (id) {
@@ -62,6 +82,7 @@ export function useAdminData() {
       lsSave(LS_ARTICLES, list);
     }
     await refresh();
+    return null;
   };
   const deleteArticle = async (id: number) => {
     if (cloud && supabase) await supabase.from("articles").delete().eq("id", id);

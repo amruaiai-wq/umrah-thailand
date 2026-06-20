@@ -20,6 +20,12 @@ export default function ImageUploadInput({ urls, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
   const cloud = isSupabaseConfigured();
 
+  const ensureBucket = async (sb: ReturnType<typeof getSupabaseBrowser>) => {
+    if (!sb) return;
+    // Try to create bucket — ignore error if it already exists
+    await sb.storage.createBucket("article-images", { public: true }).catch(() => {});
+  };
+
   const handleFiles = async (files: FileList | null) => {
     if (!files?.length) return;
     setUploading(true);
@@ -29,12 +35,15 @@ export default function ImageUploadInput({ urls, onChange }: Props) {
       if (cloud) {
         const sb = getSupabaseBrowser();
         if (!sb) continue;
+        await ensureBucket(sb);
         const ext = file.name.split(".").pop() ?? "jpg";
-        const path = `articles/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error } = await sb.storage.from("images").upload(path, file, { upsert: false });
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await sb.storage.from("article-images").upload(path, file, { upsert: false });
         if (!error) {
-          const { data } = sb.storage.from("images").getPublicUrl(path);
+          const { data } = sb.storage.from("article-images").getPublicUrl(path);
           newUrls.push(data.publicUrl);
+        } else {
+          alert("อัพโหลดรูปไม่สำเร็จ: " + error.message);
         }
       } else {
         const b64 = await toBase64(file);

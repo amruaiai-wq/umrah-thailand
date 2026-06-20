@@ -3,10 +3,11 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Article, Sponsor } from "@/lib/types";
-import { GRADIENTS, CATEGORIES } from "@/data/seed";
+import { GRADIENTS } from "@/data/seed";
 import { isSupabaseConfigured, getSupabaseBrowser } from "@/lib/supabase-client";
 import { useAdminData } from "@/components/useAdminData";
 import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
+import { useCategories } from "@/lib/useCategories";
 import ImageUploadInput from "@/components/ImageUploadInput";
 
 const DEMO_PASS = "admin1234";
@@ -65,7 +66,8 @@ export default function AdminPage() {
 function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }) {
   const d = useAdminData();
   const { prices, save: savePrices, reset: resetPrices } = usePlannerPrices();
-  const [tab, setTab] = useState<"articles" | "ads" | "prices">("articles");
+  const catMgr = useCategories();
+  const [tab, setTab] = useState<"articles" | "ads" | "prices" | "cats">("articles");
   const [modal, setModal] = useState<null | { type: "article" | "ad"; item?: Article | Sponsor }>(null);
 
   const pubArticles = d.articles.filter((a) => a.published).length;
@@ -78,6 +80,7 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
           ⚙️ โหมดทดลอง — ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น ตั้งค่า Supabase เพื่อใช้งานจริง (ดู README)
         </div>
       )}
+      {cloud && <SupabaseMigrationNotice />}
       <section className="admin-dash" style={{ paddingTop: cloud ? 120 : 60 }}>
         <div className="wrap">
           <div className="dash-top">
@@ -101,11 +104,14 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
           <div className="dash-tabs">
             <button className={`dtab ${tab === "articles" ? "active" : ""}`} onClick={() => setTab("articles")}>📝 บทความ</button>
             <button className={`dtab ${tab === "ads" ? "active" : ""}`} onClick={() => setTab("ads")}>📢 โฆษณา</button>
+            <button className={`dtab ${tab === "cats" ? "active" : ""}`} onClick={() => setTab("cats")}>🏷️ หมวดหมู่</button>
             <button className={`dtab ${tab === "prices" ? "active" : ""}`} onClick={() => setTab("prices")}>💰 ราคาแพ็กเกจ</button>
           </div>
 
           {tab === "prices" ? (
             <PricesPanel prices={prices} onSave={savePrices} onReset={resetPrices} />
+          ) : tab === "cats" ? (
+            <CatsPanel cats={catMgr.cats} onAdd={catMgr.add} onRemove={catMgr.remove} onReset={catMgr.reset} />
           ) : tab === "articles" ? (
             <div>
               <div className="panel-head">
@@ -113,17 +119,31 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
                 <button className="btn btn-emerald" style={{ fontSize: ".88rem" }} onClick={() => setModal({ type: "article" })}>+ เพิ่มบทความ</button>
               </div>
               <div className="admin-table">
-                {d.articles.map((a) => (
-                  <div className="arow" key={a.id}>
-                    <div className="thumb" style={{ background: a.img }} />
-                    <div className="ainfo"><b>{a.title}</b><small><span className="tagcat">{a.cat}</span> · {a.date}</small></div>
-                    <button className={`status-pill ${a.published ? "st-on" : "st-off"}`} onClick={() => d.toggleArticle(a.id)}>{a.published ? "เผยแพร่" : "ซ่อน"}</button>
-                    <div className="arow-actions">
-                      <button className="iconbtn" title="แก้ไข" onClick={() => setModal({ type: "article", item: a })}>✎</button>
-                      <button className="iconbtn del" title="ลบ" onClick={() => confirm("ลบบทความนี้?") && d.deleteArticle(a.id)}>🗑</button>
+                {d.articles.map((a) => {
+                  const isScheduled = a.published && a.publishAt && new Date(a.publishAt) > new Date();
+                  return (
+                    <div className="arow" key={a.id}>
+                      <div className="thumb" style={{ background: a.img }} />
+                      <div className="ainfo">
+                        <b>{a.title}</b>
+                        <small>
+                          <span className="tagcat">{a.cat}</span> · {a.date}
+                          {isScheduled && <span className="sched-badge">⏰ {new Date(a.publishAt!).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })}</span>}
+                        </small>
+                      </div>
+                      <button
+                        className={`status-pill ${isScheduled ? "st-sched" : a.published ? "st-on" : "st-off"}`}
+                        onClick={() => d.toggleArticle(a.id)}
+                      >
+                        {isScheduled ? "ตั้งเวลา" : a.published ? "เผยแพร่" : "ซ่อน"}
+                      </button>
+                      <div className="arow-actions">
+                        <button className="iconbtn" title="แก้ไข" onClick={() => setModal({ type: "article", item: a })}>✎</button>
+                        <button className="iconbtn del" title="ลบ" onClick={() => confirm("ลบบทความนี้?") && d.deleteArticle(a.id)}>🗑</button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -152,7 +172,11 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
 
       {modal?.type === "article" && (
         <ArticleModal item={modal.item as Article} onClose={() => setModal(null)}
-          onSave={(data, id) => { d.saveArticle(data, id); setModal(null); }} />
+          onSave={async (data, id) => {
+            const err = await d.saveArticle(data, id);
+            if (err) { alert("บันทึกไม่สำเร็จ: " + err); return; }
+            setModal(null);
+          }} />
       )}
       {modal?.type === "ad" && (
         <AdModal item={modal.item as Sponsor} onClose={() => setModal(null)}
@@ -266,13 +290,55 @@ function PricesPanel({
   );
 }
 
+function CatsPanel({ cats, onAdd, onRemove, onReset }: {
+  cats: string[];
+  onAdd: (name: string) => boolean;
+  onRemove: (name: string) => void;
+  onReset: () => void;
+}) {
+  const [newCat, setNewCat] = useState("");
+  const handleAdd = () => {
+    if (!newCat.trim()) return;
+    const ok = onAdd(newCat);
+    if (ok) setNewCat("");
+    else alert("\u0E21\u0E35\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E19\u0E35\u0E49\u0E41\u0E25\u0E49\u0E27");
+  };
+  return (
+    <div className="price-section" style={{ maxWidth: 520 }}>
+      <div className="panel-head" style={{ marginBottom: 20 }}>
+        <h3>\u0E08\u0E31\u0E14\u0E01\u0E32\u0E23\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E1A\u0E17\u0E04\u0E27\u0E32\u0E21</h3>
+        <button className="btn btn-outline" style={{ fontSize: ".82rem" }} onClick={onReset}>\u0E23\u0E35\u0E40\u0E0B\u0E47\u0E15</button>
+      </div>
+      <div className="cat-add-row">
+        <input
+          value={newCat}
+          onChange={(e) => setNewCat(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          placeholder="\u0E0A\u0E37\u0E48\u0E2D\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E43\u0E2B\u0E21\u0E48..."
+          className="cat-add-input"
+        />
+        <button className="btn btn-emerald" onClick={handleAdd} style={{ fontSize: ".88rem" }}>+ \u0E40\u0E1E\u0E34\u0E48\u0E21</button>
+      </div>
+      <div className="cat-list">
+        {cats.map((c) => (
+          <div key={c} className="cat-item">
+            <span className="cat-item-name">{c}</span>
+            <button className="iconbtn del" title="\u0E25\u0E1A" onClick={() => confirm(`\u0E25\u0E1A\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48 "${c}"?`) && onRemove(c)}>\uD83D\uDDD1</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function slugify(s: string) {
   return s.trim().toLowerCase().replace(/[^\w\u0E00-\u0E7F]+/g, "-").replace(/^-+|-+$/g, "") || "article-" + Date.now();
 }
 
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
-  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: CATEGORIES[0], date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
-  const upd = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  const { cats } = useCategories();
+  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: cats[0] ?? "", date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
+  const upd = (k: string, v: string | undefined) => setF((p) => ({ ...p, [k]: v }));
   const save = () => {
     if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
     onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
@@ -284,8 +350,19 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
         <div className="modal-body">
           <div className="field"><label>หัวข้อบทความ</label><input value={f.title} onChange={(e) => upd("title", e.target.value)} placeholder="ชื่อบทความ" /></div>
           <div style={{ display: "flex", gap: 14 }}>
-            <div className="field" style={{ flex: 1 }}><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
-            <div className="field" style={{ flex: 1 }}><label>วันที่</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
+            <div className="field" style={{ flex: 1 }}><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{cats.map((c) => <option key={c}>{c}</option>)}</select></div>
+            <div className="field" style={{ flex: 1 }}><label>วันที่แสดง</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
+          </div>
+          <div className="field">
+            <label>ตั้งเวลาเผยแพร่ <small style={{ color: "var(--muted)", fontWeight: 400 }}>(ว่าง = เผยแพร่ทันที)</small></label>
+            <input
+              type="datetime-local"
+              value={f.publishAt ? f.publishAt.slice(0, 16) : ""}
+              onChange={(e) => upd("publishAt", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+            />
+            {f.publishAt && new Date(f.publishAt) > new Date() && (
+              <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publishAt).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
+            )}
           </div>
           <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>
           <div className="field">
@@ -315,6 +392,30 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
           <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SupabaseMigrationNotice() {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="migration-bar" style={{ paddingTop: 80 }}>
+      <span>🗄️ Supabase เชื่อมแล้ว</span>
+      <button className="migration-toggle" onClick={() => setShow((v) => !v)}>
+        {show ? "ซ่อน" : "ดู SQL Setup รูปภาพบทความ"}
+      </button>
+      {show && (
+        <div className="migration-sql">
+          <p style={{ marginBottom: 8, fontSize: ".82rem", color: "#ccc" }}>รันใน Supabase → SQL Editor:</p>
+          <pre>{`ALTER TABLE articles\n  ADD COLUMN IF NOT EXISTS images text[] DEFAULT '{}';`}</pre>
+          <p style={{ marginTop: 10, fontSize: ".82rem", color: "#bbb", lineHeight: 1.7 }}>
+            จากนั้นใน Dashboard → Storage:<br />
+            1. New Bucket → ชื่อ <b>article-images</b> → เปิด Public<br />
+            2. Policies → Allow public SELECT (read)<br />
+            3. Allow authenticated INSERT (upload)
+          </p>
+        </div>
+      )}
     </div>
   );
 }
