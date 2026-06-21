@@ -74,18 +74,27 @@ ${content}
     });
 
     const raw = message.content[0].type === "text" ? message.content[0].text.trim() : "{}";
-    // Strip markdown code fences if AI wraps in ```json ... ```
-    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    // Strip ALL markdown code fences (handles ```json, ```\n, etc.)
+    const cleaned = raw
+      .replace(/^```[a-z]*\s*/i, "")
+      .replace(/\s*```\s*$/i, "")
+      .trim();
     try {
       const parsed = JSON.parse(cleaned);
+      if (!parsed.formatted) throw new Error("no formatted field");
       return NextResponse.json({
-        formatted: parsed.formatted ?? "",
-        excerpt: parsed.excerpt ?? "",
-        category: parsed.category ?? "",
+        formatted: String(parsed.formatted),
+        excerpt: String(parsed.excerpt ?? ""),
+        category: String(parsed.category ?? ""),
       });
     } catch {
-      // Fallback: return raw as formatted if JSON parse fails
-      return NextResponse.json({ formatted: raw, excerpt: "", category: "" });
+      // AI didn't return valid JSON — treat the whole response as formatted body
+      // but only if it looks like article content (has ## or normal text), not JSON
+      const looksLikeJson = cleaned.startsWith("{") || cleaned.startsWith("[");
+      if (looksLikeJson) {
+        return NextResponse.json({ error: "AI ส่งรูปแบบผิด กรุณาลองใหม่อีกครั้ง" }, { status: 500 });
+      }
+      return NextResponse.json({ formatted: cleaned, excerpt: "", category: "" });
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "AI error";

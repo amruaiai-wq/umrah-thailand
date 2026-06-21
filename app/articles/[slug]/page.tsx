@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getArticleBySlug, getArticles } from "@/lib/data";
+import { getArticleBySlug } from "@/lib/data";
 import ArticleRenderer from "@/components/ArticleRenderer";
 import { parseTOC, readingMins } from "@/lib/articleUtils";
 import ArticleTOC from "@/components/ArticleTOC";
 
-export async function generateStaticParams() {
-  const articles = await getArticles(false);
-  return articles.map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const a = await getArticleBySlug(params.slug);
