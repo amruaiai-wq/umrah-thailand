@@ -9,6 +9,7 @@ import { useAdminData } from "@/components/useAdminData";
 import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
 import { useCategories } from "@/lib/useCategories";
 import ImageUploadInput from "@/components/ImageUploadInput";
+import ArticleRenderer from "@/components/ArticleRenderer";
 
 const DEMO_PASS = "admin1234";
 
@@ -349,6 +350,7 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
   const [publishAt, setPublishAt] = useState(item?.publish_at ?? "");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiDone, setAiDone] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const formatWithAI = async () => {
     if (!body.trim()) { alert("กรุณาใส่เนื้อหาก่อน"); return; }
@@ -511,11 +513,55 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
             </div>
           </details>
 
-          <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>
-            บันทึก
-          </button>
+          <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+            {body.trim() && (
+              <button type="button" className="btn btn-outline" style={{ flex: 1, justifyContent: "center" }} onClick={() => setShowPreview(true)}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                ดูตัวอย่าง
+              </button>
+            )}
+            <button className="btn btn-emerald" style={{ flex: 2, justifyContent: "center" }} onClick={save}>
+              บันทึก
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* PREVIEW OVERLAY */}
+      {showPreview && (
+        <div className="preview-overlay">
+          <div className="preview-topbar">
+            <span className="preview-topbar-label">ตัวอย่างบทความ</span>
+            <button className="preview-close-btn" onClick={() => setShowPreview(false)}>
+              ← กลับแก้ไข
+            </button>
+          </div>
+          <div className="preview-scroll">
+            {/* Hero */}
+            <div className="preview-hero" style={{ background: images[0] ? undefined : img }}>
+              {images[0] && <div className="preview-cover" style={{ backgroundImage: `url(${images[0]})` }} />}
+              <div className="preview-hero-overlay" />
+              <div className="wrap preview-hero-content">
+                <span className="art-cat-badge" style={{ marginBottom: 12, display: "inline-block" }}>{cat || "หมวดหมู่"}</span>
+                <h1 style={{ color: "#fff", fontSize: "clamp(1.6rem,4vw,2.4rem)", lineHeight: 1.3, margin: 0 }}>
+                  {title || "หัวข้อบทความ"}
+                </h1>
+              </div>
+            </div>
+            {/* Body */}
+            <div className="wrap" style={{ padding: "40px 24px" }}>
+              <div className="art-content" style={{ maxWidth: 720, margin: "0 auto" }}>
+                {ex && <p className="lead">{ex}</p>}
+                {body ? (
+                  <ArticleRenderer body={body} images={images} />
+                ) : (
+                  <p style={{ color: "var(--muted)", fontStyle: "italic" }}>ยังไม่มีเนื้อหา</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
