@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const articlePages: MetadataRoute.Sitemap = articles.map((a) => ({
-    url: `${BASE}/articles/${a.slug}`,
+    url: `${BASE}/articles/${a.slug.split("/").map(encodeURIComponent).join("/")}`,
     changeFrequency: "monthly",
     priority: 0.7,
   }));
