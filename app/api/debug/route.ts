@@ -32,7 +32,7 @@ export async function GET() {
       ok: true,
       status: res.status,
       count: Array.isArray(data) ? data.length : 0,
-      sample: Array.isArray(data) ? data.map((a: Record<string, unknown>) => ({ id: a.id, title: a.title, published: a.published })) : data,
+      sample: Array.isArray(data) ? data.map((a: Record<string, unknown>) => ({ id: a.id, slug: a.slug, title: a.title, published: a.published })) : data,
     });
   } catch (e) {
     return NextResponse.json({ ok: false, reason: String(e) });
