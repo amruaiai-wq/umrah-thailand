@@ -5,9 +5,17 @@ import { Article } from "@/lib/types";
 import { useCategories } from "@/lib/useCategories";
 
 export function ArticleCard({ a }: { a: Article }) {
+  const cover = a.images?.[0];
   return (
     <Link className="art" href={`/articles/${a.slug}`}>
-      <div className="art-img" style={{ background: a.img }}>
+      <div
+        className="art-img"
+        style={
+          cover
+            ? { backgroundImage: `url(${cover})`, backgroundSize: "cover", backgroundPosition: "center" }
+            : { background: a.img }
+        }
+      >
         <span className="art-cat">{a.cat}</span>
       </div>
       <div className="art-body">
