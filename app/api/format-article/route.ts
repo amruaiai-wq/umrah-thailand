@@ -82,8 +82,16 @@ ${content}
     try {
       const parsed = JSON.parse(cleaned);
       if (!parsed.formatted) throw new Error("no formatted field");
+      let formatted = String(parsed.formatted);
+      // Guard: AI sometimes wraps entire response inside formatted field again
+      if (formatted.trim().startsWith("{")) {
+        try {
+          const inner = JSON.parse(formatted);
+          if (typeof inner.formatted === "string") formatted = inner.formatted;
+        } catch {}
+      }
       return NextResponse.json({
-        formatted: String(parsed.formatted),
+        formatted,
         excerpt: String(parsed.excerpt ?? ""),
         category: String(parsed.category ?? ""),
       });

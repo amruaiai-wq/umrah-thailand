@@ -8,17 +8,23 @@ function sbConfig() {
   return { url, key };
 }
 
-async function sbFetch<T>(path: string): Promise<T[] | null> {
+async function sbFetch<T>(path: string, label?: string): Promise<T[] | null> {
   const cfg = sbConfig();
   if (!cfg) return null;
   try {
-    const res = await fetch(`${cfg.url}/rest/v1/${path}`, {
+    const url = `${cfg.url}/rest/v1/${path}`;
+    const res = await fetch(url, {
       headers: { apikey: cfg.key, Authorization: `Bearer ${cfg.key}` },
       cache: "no-store",
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(`[sbFetch] ${label ?? path} → ${res.status}: ${body}`);
+      return null;
+    }
     return (await res.json()) as T[];
-  } catch {
+  } catch (e) {
+    console.error(`[sbFetch] ${label ?? path} threw:`, e);
     return null;
   }
 }
@@ -42,8 +48,13 @@ export async function getArticles(onlyPublished = true): Promise<Article[]> {
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const data = await sbFetch<Article>(`articles?slug=eq.${encodeURIComponent(slug)}&limit=1`);
-  if (data === null) return seedArticles.find((a) => a.slug === slug) ?? null;
+  // params.slug from Next.js may arrive URL-encoded; decode first to avoid double-encoding
+  const decoded = decodeURIComponent(slug);
+  const data = await sbFetch<Article>(
+    `articles?slug=eq.${encodeURIComponent(decoded)}&limit=1`,
+    `slug-lookup:${decoded}`
+  );
+  if (data === null) return seedArticles.find((a) => a.slug === decoded) ?? null;
   return data[0] ?? null;
 }
 

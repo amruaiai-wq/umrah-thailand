@@ -51,6 +51,16 @@ function parseBody(body: string): Block[] {
   return blocks;
 }
 
+function unwrapBody(body: string): string {
+  const trimmed = body.trim();
+  if (!trimmed.startsWith("{")) return body;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (typeof parsed.formatted === "string") return parsed.formatted;
+  } catch {}
+  return body;
+}
+
 export default function ArticleRenderer({
   body,
   images = [],
@@ -58,7 +68,7 @@ export default function ArticleRenderer({
   body: string;
   images?: string[];
 }) {
-  const raw = parseBody(body);
+  const raw = parseBody(unwrapBody(body));
   const hasMarkers = raw.some((b) => b.type === "img");
 
   // Auto-inject images every 3 paragraphs if no [img] markers
