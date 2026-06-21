@@ -339,7 +339,27 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
   const { cats } = useCategories();
   const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: cats[0] ?? "", date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
   const [schedMode, setSchedMode] = useState<"now" | "later">(item?.publish_at ? "later" : "now");
+  const [aiLoading, setAiLoading] = useState(false);
   const upd = (k: string, v: string | undefined) => setF((p) => ({ ...p, [k]: v }));
+
+  const formatWithAI = async () => {
+    if (!f.body?.trim()) { alert("กรุณาใส่เนื้อหาก่อน"); return; }
+    setAiLoading(true);
+    try {
+      const res = await fetch("/api/format-article", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: f.title, content: f.body }),
+      });
+      const data = await res.json();
+      if (data.error) { alert("AI Error: " + data.error); return; }
+      upd("body", data.formatted);
+    } catch {
+      alert("เกิดข้อผิดพลาด ไม่สามารถติดต่อ AI ได้");
+    } finally {
+      setAiLoading(false);
+    }
+  };
   const save = () => {
     if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
     onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
@@ -390,7 +410,16 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
           </div>
           <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>
           <div className="field">
-            <label>เนื้อหาบทความ</label>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <label style={{ marginBottom: 0 }}>เนื้อหาบทความ</label>
+              <button type="button" className="ai-format-btn" onClick={formatWithAI} disabled={aiLoading}>
+                {aiLoading ? (
+                  <><span className="ai-spin">⏳</span> AI กำลังจัด...</>
+                ) : (
+                  <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> จัดหน้าด้วย AI</>
+                )}
+              </button>
+            </div>
             <div className="body-hint">
               <span><b>##</b> หัวข้อหลัก</span>
               <span><b>###</b> หัวข้อรอง</span>
