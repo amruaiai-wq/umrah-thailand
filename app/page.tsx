@@ -117,11 +117,11 @@ export default async function HomePage() {
               <span className="why-num">01</span>
               <div className="why-icon">
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
                 </svg>
               </div>
-              <h4>เชื่อถือได้</h4>
-              <p>ดำเนินงานโดยทีมที่มีประสบการณ์ พร้อมผลงานที่จับต้องได้ ไม่ใช่แค่คำสัญญา</p>
+              <h4>ทีมซัพพอร์ตในซาอุดีฯ</h4>
+              <p>มีทีมงานประจำอยู่ที่ซาอุดีอาระเบีย หากเกิดปัญหาระหว่างการเดินทาง สามารถช่วยเหลือได้ทันทีในพื้นที่จริง ไม่ต้องรอติดต่อจากไทย</p>
             </div>
             <div className="why-card fade-up" style={{ transitionDelay: "100ms" }}>
               <span className="why-num">02</span>
@@ -132,21 +132,18 @@ export default async function HomePage() {
                   <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
                 </svg>
               </div>
-              <h4>ไม่ทิ้งลูกค้า</h4>
-              <p>ติดตามดูแลทุกขั้นตอน ตั้งแต่เตรียมเอกสารวีซ่า จนเดินทางกลับถึงบ้าน</p>
+              <h4>ประสบการณ์มากกว่า 10 ปี</h4>
+              <p>ดำเนินงานโดยทีมงานมืออาชีพที่มีประสบการณ์ในธุรกิจอุมเราะห์มากกว่า 10 ปี มีผลงานที่จับต้องได้ ไม่ใช่แค่คำสัญญา</p>
             </div>
             <div className="why-card fade-up" style={{ transitionDelay: "200ms" }}>
               <span className="why-num">03</span>
               <div className="why-icon">
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2"/>
-                  <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-                  <line x1="12" y1="12" x2="12" y2="16"/>
-                  <line x1="10" y1="14" x2="14" y2="14"/>
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
-              <h4>มืออาชีพ</h4>
-              <p>ตรงต่อเวลา โปร่งใส แจ้งให้ทราบทุกความคืบหน้า ไม่ปล่อยให้รอข้อมูลคนเดียว</p>
+              <h4>เชื่อถือได้ มีตัวตน</h4>
+              <p>ไม่เท มีที่อยู่จริง ออกใบเสร็จให้ทุกครั้งหลังมีการทำธุรกรรม เพื่อความโปร่งใสและให้คุณรู้สึกมั่นใจ</p>
             </div>
           </div>
         </div>

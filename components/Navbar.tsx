@@ -10,7 +10,7 @@ const LINKS = [
   { href: "/plan", label: "สถานที่ประวัติศาสตร์" },
   { href: "/articles", label: "บทความ" },
   { href: "/about", label: "เกี่ยวกับเรา" },
-  { href: "/contact", label: "ติดต่อ" },
+  { href: "/about#contact", label: "ติดต่อ" },
 ];
 
 export default function Navbar() {

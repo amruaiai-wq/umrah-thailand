@@ -338,6 +338,7 @@ function slugify(s: string) {
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
   const { cats } = useCategories();
   const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: cats[0] ?? "", date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
+  const [schedMode, setSchedMode] = useState<"now" | "later">(item?.publish_at ? "later" : "now");
   const upd = (k: string, v: string | undefined) => setF((p) => ({ ...p, [k]: v }));
   const save = () => {
     if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
@@ -354,14 +355,37 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
             <div className="field" style={{ flex: 1 }}><label>วันที่แสดง</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
           </div>
           <div className="field">
-            <label>ตั้งเวลาเผยแพร่ <small style={{ color: "var(--muted)", fontWeight: 400 }}>(ว่าง = เผยแพร่ทันที)</small></label>
-            <input
-              type="datetime-local"
-              value={f.publish_at ? f.publish_at.slice(0, 16) : ""}
-              onChange={(e) => upd("publish_at", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
-            />
-            {f.publish_at && new Date(f.publish_at) > new Date() && (
-              <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publish_at).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
+            <label>การเผยแพร่</label>
+            <div className="pub-mode-row">
+              <button
+                type="button"
+                className={`pub-mode-btn${schedMode === "now" ? " active" : ""}`}
+                onClick={() => { setSchedMode("now"); upd("publish_at", undefined); }}
+              >
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                เผยแพร่ทันที
+              </button>
+              <button
+                type="button"
+                className={`pub-mode-btn${schedMode === "later" ? " active" : ""}`}
+                onClick={() => setSchedMode("later")}
+              >
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                เลือกเวลา
+              </button>
+            </div>
+            {schedMode === "later" && (
+              <>
+                <input
+                  type="datetime-local"
+                  style={{ marginTop: 10 }}
+                  value={f.publish_at ? f.publish_at.slice(0, 16) : ""}
+                  onChange={(e) => upd("publish_at", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+                />
+                {f.publish_at && new Date(f.publish_at) > new Date() && (
+                  <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publish_at).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
+                )}
+              </>
             )}
           </div>
           <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>

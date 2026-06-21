@@ -629,6 +629,18 @@ footer.site{background:#0a0a0a;color:rgba(255,255,255,.6);padding:60px 0 26px;ma
 .sched-badge{background:rgba(99,102,241,.12);color:#6366f1;font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:5px;margin-left:6px}
 .st-sched{background:rgba(99,102,241,.12)!important;color:#6366f1!important;border-color:rgba(99,102,241,.3)!important}
 .sched-info{font-size:.8rem;color:#6366f1;margin:4px 0 0;padding:6px 10px;background:rgba(99,102,241,.06);border-radius:6px}
+.pub-mode-row{display:flex;gap:10px;margin-bottom:0}
+.pub-mode-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--muted);font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Anuphan',sans-serif}
+.pub-mode-btn:hover{border-color:var(--ink);color:var(--ink)}
+.pub-mode-btn.active{border-color:var(--emerald);background:rgba(14,124,90,.07);color:var(--emerald)}
+/* about page */
+.about-why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:10px}
+.about-why-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative;overflow:hidden}
+.about-why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--emerald),var(--gold))}
+.about-why-num{font-size:2.5rem;font-weight:800;color:var(--line);line-height:1;margin-bottom:12px}
+.about-why-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;color:var(--gold);margin-bottom:14px}
+.about-why-card h4{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:8px}
+.about-why-card p{font-size:.9rem;color:var(--muted);line-height:1.75}
 
 /* Migration notice */
 .migration-bar{background:linear-gradient(90deg,var(--navy),var(--navy-soft));padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:.85rem;color:rgba(255,255,255,.8);position:fixed;top:0;left:0;right:0;z-index:500}
@@ -675,6 +687,7 @@ footer.site{background:#0a0a0a;color:rgba(255,255,255,.6);padding:60px 0 26px;ma
   .planner-summary-wrap{position:static}
   .hist-grid{grid-template-columns:1fr}
   .hist-cat-grid{grid-template-columns:1fr}
+  .about-why-grid{grid-template-columns:1fr}
   .hist-detail-facts{grid-template-columns:1fr}
   .hist-detail-figures{grid-template-columns:1fr}
   .battle-facts{grid-template-columns:1fr}
