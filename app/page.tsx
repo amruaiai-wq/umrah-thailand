@@ -149,6 +149,52 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* CALCULATOR CTA */}
+      <section className="sec">
+        <div className="wrap">
+          <div className="calc-cta-band fade-up">
+            <div className="calc-cta-left">
+              <span className="eyebrow" style={{ color: "#fff" }}>เครื่องมือวางแผน</span>
+              <h2 className="calc-cta-title">รู้ราคาก่อนตัดสินใจ</h2>
+              <p className="calc-cta-sub">เลือกตั๋ว โรงแรม รถ ไกด์ และกิจกรรม — ระบบคำนวณราคาประมาณการให้ทันที ไม่มีค่าใช้จ่าย</p>
+              <div className="calc-cta-features">
+                <span>✈ ตั๋วเครื่องบิน</span>
+                <span>🏨 โรงแรม 3–5 ดาว</span>
+                <span>🪪 วีซ่า</span>
+                <span>🚌 รถรับส่ง</span>
+                <span>🧭 ไกด์</span>
+                <span>🍽 อาหาร</span>
+              </div>
+              <Link className="btn btn-gold" href="/planner" style={{ marginTop: 24, alignSelf: "flex-start" }}>
+                เริ่มคำนวณฟรี →
+              </Link>
+            </div>
+            <div className="calc-cta-preview">
+              <div className="calc-preview-card">
+                <div className="calc-preview-row">
+                  <span>จำนวนคน</span><strong>2 คน</strong>
+                </div>
+                <div className="calc-preview-row">
+                  <span>✈ ตั๋วบิน</span><strong>~40,000 ฿</strong>
+                </div>
+                <div className="calc-preview-row">
+                  <span>🏨 โรงแรม 8 คืน</span><strong>~24,000 ฿</strong>
+                </div>
+                <div className="calc-preview-row">
+                  <span>🪪 วีซ่า</span><strong>~8,000 ฿</strong>
+                </div>
+                <div className="calc-preview-divider" />
+                <div className="calc-preview-total">
+                  <span>รวมโดยประมาณ</span>
+                  <strong>~90,000 ฿</strong>
+                </div>
+                <p className="calc-preview-note">ปรับได้ตามความต้องการ →</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* SPONSORS */}
       <section className="sec sponsors">
         <div className="wrap">

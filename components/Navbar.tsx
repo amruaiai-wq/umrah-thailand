@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/umrah", label: "วิธีทำอุมเราะห์" },
   { href: "/plan", label: "สถานที่ประวัติศาสตร์" },
   { href: "/articles", label: "บทความ" },
+  { href: "/planner", label: "คำนวณค่าใช้จ่าย" },
   { href: "/about", label: "เกี่ยวกับเรา" },
   { href: "/about#contact", label: "ติดต่อ" },
 ];
