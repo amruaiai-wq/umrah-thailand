@@ -25,16 +25,18 @@ async function sbFetch<T>(path: string): Promise<T[] | null> {
 
 // --- Articles ---
 export async function getArticles(onlyPublished = true): Promise<Article[]> {
-  const now = new Date().toISOString();
+  // Keep SQL simple — filter publish_at in JS to avoid PostgREST or() issues
   let path = "articles?order=id.desc";
-  if (onlyPublished) {
-    path += `&published=eq.true&or=(publish_at.is.null,publish_at.lte.${encodeURIComponent(now)})`;
-  }
+  if (onlyPublished) path += "&published=eq.true";
   const data = await sbFetch<Article>(path);
   if (data === null) {
     return onlyPublished
       ? seedArticles.filter((a) => a.published && (!a.publish_at || new Date(a.publish_at) <= new Date()))
       : seedArticles;
+  }
+  if (onlyPublished) {
+    const now = new Date();
+    return data.filter((a) => !a.publish_at || new Date(a.publish_at) <= now);
   }
   return data;
 }
