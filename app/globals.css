@@ -689,8 +689,17 @@ footer.site{background:#0a0a0a;color:rgba(255,255,255,.6);padding:60px 0 26px;ma
 .ai-format-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1.5px solid #7c3aed;background:rgba(124,58,237,.06);color:#7c3aed;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Anuphan',sans-serif;white-space:nowrap}
 .ai-format-btn:hover:not(:disabled){background:rgba(124,58,237,.12);border-color:#6d28d9}
 .ai-format-btn:disabled{opacity:.6;cursor:not-allowed}
+.ai-format-btn.ai-done{border-color:var(--emerald);background:rgba(14,124,90,.07);color:var(--emerald)}
 @keyframes ai-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .ai-spin{animation:ai-pulse 1.2s ease-in-out infinite}
+
+/* AI result review card */
+.ai-result-card{background:rgba(14,124,90,.04);border:1.5px solid rgba(14,124,90,.22);border-radius:10px;padding:16px 16px 4px;margin-bottom:4px}
+.ai-result-label{font-size:.82rem;color:var(--emerald);font-weight:600;margin-bottom:12px}
+
+/* Gradient color picker collapsed */
+.color-pick-summary{cursor:pointer;color:var(--muted);font-size:.84rem;font-weight:500;user-select:none;list-style:none;padding:4px 0}
+.color-pick-summary::-webkit-details-marker{display:none}
 
 /* Admin body hint */
 .body-hint{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}

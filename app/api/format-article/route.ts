@@ -3,33 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 
 const SYSTEM_PROMPT = `คุณคือผู้เชี่ยวชาญด้านการเขียนคอนเทนต์ SEO สำหรับเว็บไซต์อุมเราะห์ไทย
 
-หน้าที่ของคุณ: รับเนื้อหาดิบ (plain text) แล้วจัดรูปแบบให้ครบตาม syntax ของเว็บ และ SEO-friendly
+หน้าที่ของคุณ: รับเนื้อหาดิบ (plain text) แล้วจัดรูปแบบ พร้อมสร้างคำโปรยและเลือกหมวดหมู่ให้อัตโนมัติ
 
-==SYNTAX ที่ใช้==
+==SYNTAX ที่ใช้สำหรับ formatted==
 ## หัวข้อหลัก        → H2 (ควรมี 3-5 หัวข้อ ตามเนื้อหา)
 ### หัวข้อรอง        → H3 (ใส่ใต้ H2 เมื่อมีหัวข้อย่อย)
-> ข้อความสำคัญ      → Highlight box (ใส่ประมาณ 2-3 จุดต่อบทความ เพื่อเน้นข้อมูลสำคัญ)
-- รายการ            → Bullet list (ใช้เมื่อมีข้อมูลที่เหมาะเป็นรายการ)
+> ข้อความสำคัญ      → Highlight box (ใส่ประมาณ 2-3 จุดต่อบทความ)
+- รายการ            → Bullet list
 [img]               → จุดใส่รูปภาพ (วางหลังทุก 2-3 ย่อหน้า)
 ข้อความปกติ          → ย่อหน้าธรรมดา
 
 ==กฎ SEO==
 1. หัวข้อ H2 แรก ต้องมีคีย์เวิร์ดหลักจากชื่อบทความ
-2. แต่ละย่อหน้ามีความยาว 3-5 ประโยค อ่านง่าย ไม่ยาวเกินไป
-3. ใส่ > highlight สำหรับข้อมูลที่คนมักค้นหา หรือข้อเท็จจริงสำคัญ
-4. วาง [img] อย่างน้อย 2 จุดในบทความ เพื่อให้รูปภาพกระจายทั่วบทความ
+2. แต่ละย่อหน้ามีความยาว 3-5 ประโยค อ่านง่าย
+3. ใส่ > highlight สำหรับข้อมูลที่คนมักค้นหา
+4. วาง [img] อย่างน้อย 2 จุดในบทความ
 5. บทความควรมีบทนำ (ก่อน ## แรก) 1-2 ย่อหน้า
 6. ลงท้ายด้วยย่อหน้าสรุปหรือ CTA สั้นๆ
-
-==สิ่งที่ต้องทำ==
-- คงเนื้อหาทุกอย่างจากต้นฉบับ ห้ามตัดข้อมูลออก
-- เพิ่มโครงสร้างหัวข้อที่สมเหตุสมผล
-- เพิ่ม highlight สำหรับข้อมูลที่น่าสนใจ
-- วาง [img] ในตำแหน่งที่เหมาะสม
-- เขียนเป็นภาษาไทยเท่านั้น
+7. คงเนื้อหาทุกอย่างจากต้นฉบับ ห้ามตัดข้อมูลออก
 
 ==Output==
-ส่งคืนเฉพาะเนื้อหาที่จัดรูปแบบแล้ว ไม่ต้องมีคำอธิบายหรือ markup พิเศษใดๆ นอกจาก syntax ที่กำหนด`;
+ส่งคืน JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown code block:
+{
+  "formatted": "เนื้อหาที่จัดรูปแบบแล้วตาม syntax ด้านบน",
+  "excerpt": "คำโปรยสั้น 1-2 ประโยค บอกสาระสำคัญของบทความ เพื่อแสดงในหน้ารายการ",
+  "category": "ชื่อหมวดหมู่ที่เหมาะสมที่สุดจากรายการที่ให้มา"
+}`;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -40,17 +39,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { title?: string; content?: string };
+  let body: { title?: string; content?: string; categories?: string[] };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { title = "", content = "" } = body;
+  const { title = "", content = "", categories = [] } = body;
   if (!content?.trim()) {
     return NextResponse.json({ error: "ไม่มีเนื้อหาที่จะจัดรูปแบบ" }, { status: 400 });
   }
+
+  const catList = categories.length ? categories.join(", ") : "ทั่วไป";
 
   try {
     const client = new Anthropic({ apiKey });
@@ -62,17 +63,30 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `ชื่อบทความ: ${title || "(ไม่ระบุ)"}
+หมวดหมู่ที่มีในระบบ: ${catList}
 
 เนื้อหาดิบ:
 ${content}
 
-กรุณาจัดรูปแบบตาม syntax ที่กำหนด`,
+จัดรูปแบบตาม syntax และส่งคืน JSON ตามที่กำหนด`,
         },
       ],
     });
 
-    const result = message.content[0].type === "text" ? message.content[0].text : "";
-    return NextResponse.json({ formatted: result });
+    const raw = message.content[0].type === "text" ? message.content[0].text.trim() : "{}";
+    // Strip markdown code fences if AI wraps in ```json ... ```
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    try {
+      const parsed = JSON.parse(cleaned);
+      return NextResponse.json({
+        formatted: parsed.formatted ?? "",
+        excerpt: parsed.excerpt ?? "",
+        category: parsed.category ?? "",
+      });
+    } catch {
+      // Fallback: return raw as formatted if JSON parse fails
+      return NextResponse.json({ formatted: raw, excerpt: "", category: "" });
+    }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "AI error";
     return NextResponse.json({ error: msg }, { status: 500 });

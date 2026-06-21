@@ -337,50 +337,142 @@ function slugify(s: string) {
 
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
   const { cats } = useCategories();
-  const [f, setF] = useState<Partial<Article>>(item || { title: "", cat: cats[0] ?? "", date: "", ex: "", body: "", img: GRADIENTS[0], images: [], published: true });
+  const isEdit = !!item;
+
+  const [title, setTitle] = useState(item?.title ?? "");
+  const [body, setBody] = useState(item?.body ?? "");
+  const [cat, setCat] = useState(item?.cat ?? cats[0] ?? "");
+  const [ex, setEx] = useState(item?.ex ?? "");
+  const [img, setImg] = useState(item?.img ?? GRADIENTS[0]);
+  const [images, setImages] = useState<string[]>(item?.images ?? []);
   const [schedMode, setSchedMode] = useState<"now" | "later">(item?.publish_at ? "later" : "now");
+  const [publishAt, setPublishAt] = useState(item?.publish_at ?? "");
   const [aiLoading, setAiLoading] = useState(false);
-  const upd = (k: string, v: string | undefined) => setF((p) => ({ ...p, [k]: v }));
+  const [aiDone, setAiDone] = useState(false);
 
   const formatWithAI = async () => {
-    if (!f.body?.trim()) { alert("กรุณาใส่เนื้อหาก่อน"); return; }
+    if (!body.trim()) { alert("กรุณาใส่เนื้อหาก่อน"); return; }
     setAiLoading(true);
+    setAiDone(false);
     try {
       const res = await fetch("/api/format-article", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: f.title, content: f.body }),
+        body: JSON.stringify({ title, content: body, categories: cats }),
       });
       const data = await res.json();
       if (data.error) { alert("AI Error: " + data.error); return; }
-      upd("body", data.formatted);
+      if (data.formatted) setBody(data.formatted);
+      if (data.excerpt) setEx(data.excerpt);
+      if (data.category && cats.includes(data.category)) setCat(data.category);
+      setAiDone(true);
     } catch {
-      alert("เกิดข้อผิดพลาด ไม่สามารถติดต่อ AI ได้");
+      alert("ไม่สามารถติดต่อ AI ได้");
     } finally {
       setAiLoading(false);
     }
   };
+
   const save = () => {
-    if (!f.title?.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
-    onSave({ ...f, slug: item?.slug || slugify(f.title!), date: f.date?.trim() || "วันนี้" }, item?.id);
+    if (!title.trim()) { alert("กรุณากรอกหัวข้อ"); return; }
+    if (!body.trim()) { alert("กรุณาใส่เนื้อหา หรือกด AI จัดการก่อน"); return; }
+    const now = new Date();
+    const m = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    const autoDate = `${now.getDate()} ${m[now.getMonth()]} ${now.getFullYear()}`;
+    onSave({
+      title,
+      cat: cat || cats[0],
+      date: item?.date || autoDate,
+      ex: ex || title.slice(0, 120),
+      body,
+      img,
+      images,
+      published: true,
+      publish_at: schedMode === "later" && publishAt ? publishAt : undefined,
+      slug: item?.slug || slugify(title),
+    }, item?.id);
   };
+
   return (
     <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card" style={{ maxWidth: 680 }}>
-        <div className="modal-head"><h3>{item ? "แก้ไขบทความ" : "เพิ่มบทความ"}</h3><button className="modal-x" onClick={onClose}>×</button></div>
+      <div className="modal-card" style={{ maxWidth: 700 }}>
+        <div className="modal-head">
+          <h3>{isEdit ? "แก้ไขบทความ" : "เพิ่มบทความใหม่"}</h3>
+          <button className="modal-x" onClick={onClose}>×</button>
+        </div>
         <div className="modal-body">
-          <div className="field"><label>หัวข้อบทความ</label><input value={f.title} onChange={(e) => upd("title", e.target.value)} placeholder="ชื่อบทความ" /></div>
-          <div style={{ display: "flex", gap: 14 }}>
-            <div className="field" style={{ flex: 1 }}><label>หมวดหมู่</label><select value={f.cat} onChange={(e) => upd("cat", e.target.value)}>{cats.map((c) => <option key={c}>{c}</option>)}</select></div>
-            <div className="field" style={{ flex: 1 }}><label>วันที่แสดง</label><input value={f.date} onChange={(e) => upd("date", e.target.value)} placeholder="เช่น 20 พ.ค. 2026" /></div>
+
+          {/* 1. Title */}
+          <div className="field">
+            <label>หัวข้อบทความ</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="ชื่อบทความ" />
           </div>
+
+          {/* 2. Image */}
+          <div className="field">
+            <label>
+              รูปภาพ
+              <small style={{ color: "var(--muted)", fontWeight: 400, marginLeft: 6 }}>รูปแรก = ปก · ที่เหลือแทรกที่ [img]</small>
+            </label>
+            <ImageUploadInput urls={images} onChange={setImages} />
+          </div>
+
+          {/* 3. Content + AI button */}
+          <div className="field">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <label style={{ marginBottom: 0 }}>
+                เนื้อหา
+                {!isEdit && <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: ".8rem", marginLeft: 8 }}>วางเนื้อหาดิบ แล้วกด AI จัดการ</span>}
+              </label>
+              <button
+                type="button"
+                className={`ai-format-btn${aiDone ? " ai-done" : ""}`}
+                onClick={formatWithAI}
+                disabled={aiLoading}
+              >
+                {aiLoading
+                  ? <><span className="ai-spin">⏳</span> AI กำลังจัด...</>
+                  : aiDone
+                  ? <>✓ จัดหน้าแล้ว</>
+                  : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> AI จัดการ</>
+                }
+              </button>
+            </div>
+            <textarea
+              value={body}
+              onChange={(e) => { setBody(e.target.value); setAiDone(false); }}
+              placeholder={"วางเนื้อหาดิบที่นี่ เช่น:\n\nอุมเราะห์คือการเดินทางไปยังนครมักกะฮ์...\nขั้นตอนแรกคือการสวมใส่ชุดอิหรอม...\n\nจากนั้นกด AI จัดการ — จะจัดหัวข้อ คำโปรย หมวดหมู่ให้อัตโนมัติ"}
+              style={{ minHeight: 280, fontFamily: "monospace", fontSize: ".85rem" }}
+            />
+          </div>
+
+          {/* 4. AI result review (shown after AI runs) */}
+          {aiDone && (
+            <div className="ai-result-card">
+              <p className="ai-result-label">✓ AI จัดการแล้ว — ตรวจสอบหรือแก้ไขก่อนบันทึก</p>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <div className="field" style={{ flex: "0 0 200px" }}>
+                  <label>หมวดหมู่</label>
+                  <select value={cat} onChange={(e) => setCat(e.target.value)}>
+                    {cats.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="field" style={{ flex: 1, minWidth: 200 }}>
+                  <label>คำโปรย</label>
+                  <input value={ex} onChange={(e) => setEx(e.target.value)} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5. Publish mode */}
           <div className="field">
             <label>การเผยแพร่</label>
             <div className="pub-mode-row">
               <button
                 type="button"
                 className={`pub-mode-btn${schedMode === "now" ? " active" : ""}`}
-                onClick={() => { setSchedMode("now"); upd("publish_at", undefined); }}
+                onClick={() => { setSchedMode("now"); setPublishAt(""); }}
               >
                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7"/></svg>
                 เผยแพร่ทันที
@@ -399,50 +491,29 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
                 <input
                   type="datetime-local"
                   style={{ marginTop: 10 }}
-                  value={f.publish_at ? f.publish_at.slice(0, 16) : ""}
-                  onChange={(e) => upd("publish_at", e.target.value ? new Date(e.target.value).toISOString() : undefined)}
+                  value={publishAt ? publishAt.slice(0, 16) : ""}
+                  onChange={(e) => setPublishAt(e.target.value ? new Date(e.target.value).toISOString() : "")}
                 />
-                {f.publish_at && new Date(f.publish_at) > new Date() && (
-                  <p className="sched-info">⏰ จะเผยแพร่ {new Date(f.publish_at).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
+                {publishAt && new Date(publishAt) > new Date() && (
+                  <p className="sched-info">⏰ จะเผยแพร่ {new Date(publishAt).toLocaleString("th-TH", { dateStyle: "full", timeStyle: "short" })}</p>
                 )}
               </>
             )}
           </div>
-          <div className="field"><label>เนื้อหาย่อ (คำโปรย)</label><textarea value={f.ex} onChange={(e) => upd("ex", e.target.value)} placeholder="ประโยคแนะนำบทความ 1–2 ประโยค" /></div>
-          <div className="field">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <label style={{ marginBottom: 0 }}>เนื้อหาบทความ</label>
-              <button type="button" className="ai-format-btn" onClick={formatWithAI} disabled={aiLoading}>
-                {aiLoading ? (
-                  <><span className="ai-spin">⏳</span> AI กำลังจัด...</>
-                ) : (
-                  <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> จัดหน้าด้วย AI</>
-                )}
-              </button>
+
+          {/* 6. Gradient color (collapsed) */}
+          <details className="field">
+            <summary className="color-pick-summary">สีพื้นหลัง (ใช้ถ้าไม่มีรูป)</summary>
+            <div className="swatches" style={{ marginTop: 8 }}>
+              {GRADIENTS.map((g, i) => (
+                <div key={i} className={`swatch ${g === img ? "sel" : ""}`} style={{ background: g }} onClick={() => setImg(g)} />
+              ))}
             </div>
-            <div className="body-hint">
-              <span><b>##</b> หัวข้อหลัก</span>
-              <span><b>###</b> หัวข้อรอง</span>
-              <span><b>&gt;</b> ข้อความสำคัญ (highlight)</span>
-              <span><b>-</b> รายการ</span>
-              <span><b>[img]</b> วางรูปตรงนี้</span>
-            </div>
-            <textarea value={f.body} onChange={(e) => upd("body", e.target.value)}
-              placeholder={"## อุมเราะห์คืออะไร\n\nเนื้อหาย่อหน้า...\n\n[img]\n\n> ข้อความสำคัญจะขึ้น highlight อัตโนมัติ\n\n- รายการที่ 1\n- รายการที่ 2"}
-              style={{ minHeight: 220, fontFamily: "monospace", fontSize: ".85rem" }} />
-          </div>
-          <div className="field">
-            <label>
-              รูปภาพ
-              <small style={{ color: "var(--muted)", fontWeight: 400, marginLeft: 6 }}>รูปแรก = ภาพปก · ที่เหลือแทรกในเนื้อหาที่ [img]</small>
-            </label>
-            <ImageUploadInput
-              urls={f.images ?? []}
-              onChange={(imgs) => setF((p) => ({ ...p, images: imgs }))}
-            />
-          </div>
-          <div className="field"><label>สีปก (ใช้ถ้าไม่มีรูป)</label><div className="swatches">{GRADIENTS.map((g, i) => <div key={i} className={`swatch ${g === f.img ? "sel" : ""}`} style={{ background: g }} onClick={() => upd("img", g)} />)}</div></div>
-          <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>บันทึก</button>
+          </details>
+
+          <button className="btn btn-emerald" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} onClick={save}>
+            บันทึก
+          </button>
         </div>
       </div>
     </div>
