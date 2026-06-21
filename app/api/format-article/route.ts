@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 4096,
+      max_tokens: 8000,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -96,13 +96,19 @@ ${content}
         category: String(parsed.category ?? ""),
       });
     } catch {
-      // AI didn't return valid JSON — treat the whole response as formatted body
-      // but only if it looks like article content (has ## or normal text), not JSON
-      const looksLikeJson = cleaned.startsWith("{") || cleaned.startsWith("[");
-      if (looksLikeJson) {
-        return NextResponse.json({ error: "AI ส่งรูปแบบผิด กรุณาลองใหม่อีกครั้ง" }, { status: 500 });
+      // JSON.parse failed (likely truncated). Try regex extraction before giving up.
+      const fmtMatch = cleaned.match(/"formatted"\s*:\s*"([\s\S]+?)(?:"\s*[,}]|"$)/);
+      if (fmtMatch) {
+        try {
+          const extracted = JSON.parse(`"${fmtMatch[1]}"`);
+          return NextResponse.json({ formatted: extracted, excerpt: "", category: "" });
+        } catch {}
       }
-      return NextResponse.json({ formatted: cleaned, excerpt: "", category: "" });
+      // Not JSON at all — treat as plain formatted content
+      if (!cleaned.startsWith("{") && !cleaned.startsWith("[")) {
+        return NextResponse.json({ formatted: cleaned, excerpt: "", category: "" });
+      }
+      return NextResponse.json({ error: "AI ส่งรูปแบบผิด กรุณาลองใหม่อีกครั้ง" }, { status: 500 });
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "AI error";
