@@ -301,29 +301,29 @@ function CatsPanel({ cats, onAdd, onRemove, onReset }: {
     if (!newCat.trim()) return;
     const ok = onAdd(newCat);
     if (ok) setNewCat("");
-    else alert("\u0E21\u0E35\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E19\u0E35\u0E49\u0E41\u0E25\u0E49\u0E27");
+    else alert("มีหมวดหมู่นี้แล้ว");
   };
   return (
     <div className="price-section" style={{ maxWidth: 520 }}>
       <div className="panel-head" style={{ marginBottom: 20 }}>
-        <h3>\u0E08\u0E31\u0E14\u0E01\u0E32\u0E23\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E1A\u0E17\u0E04\u0E27\u0E32\u0E21</h3>
-        <button className="btn btn-outline" style={{ fontSize: ".82rem" }} onClick={onReset}>\u0E23\u0E35\u0E40\u0E0B\u0E47\u0E15</button>
+        <h3>จัดการหมวดหมู่บทความ</h3>
+        <button className="btn btn-outline" style={{ fontSize: ".82rem" }} onClick={onReset}>รีเซ็ต</button>
       </div>
       <div className="cat-add-row">
         <input
           value={newCat}
           onChange={(e) => setNewCat(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          placeholder="\u0E0A\u0E37\u0E48\u0E2D\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48\u0E43\u0E2B\u0E21\u0E48..."
+          placeholder="ชื่อหมวดหมู่ใหม่..."
           className="cat-add-input"
         />
-        <button className="btn btn-emerald" onClick={handleAdd} style={{ fontSize: ".88rem" }}>+ \u0E40\u0E1E\u0E34\u0E48\u0E21</button>
+        <button className="btn btn-emerald" onClick={handleAdd} style={{ fontSize: ".88rem" }}>+ เพิ่ม</button>
       </div>
       <div className="cat-list">
         {cats.map((c) => (
           <div key={c} className="cat-item">
             <span className="cat-item-name">{c}</span>
-            <button className="iconbtn del" title="\u0E25\u0E1A" onClick={() => confirm(`\u0E25\u0E1A\u0E2B\u0E21\u0E27\u0E14\u0E2B\u0E21\u0E39\u0E48 "${c}"?`) && onRemove(c)}>\uD83D\uDDD1</button>
+            <button className="iconbtn del" title="ลบ" onClick={() => confirm(`ลบหมวดหมู่ "${c}"?`) && onRemove(c)}>🗑</button>
           </div>
         ))}
       </div>
@@ -332,7 +332,7 @@ function CatsPanel({ cats, onAdd, onRemove, onReset }: {
 }
 
 function slugify(s: string) {
-  return s.trim().toLowerCase().replace(/[^\w\u0E00-\u0E7F]+/g, "-").replace(/^-+|-+$/g, "") || "article-" + Date.now();
+  return s.trim().toLowerCase().replace(/[^\w฀-๿]+/g, "-").replace(/^-+|-+$/g, "") || "article-" + Date.now();
 }
 
 function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () => void; onSave: (d: Partial<Article>, id?: number) => void }) {
