@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getArticles, getSponsors } from "@/lib/data";
+
+export const revalidate = 60;
 import { ArticleCard } from "@/components/ArticleGrid";
 import SponsorGrid from "@/components/SponsorGrid";
 import KaabaBackground from "@/components/KaabaBackground";

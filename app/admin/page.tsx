@@ -539,7 +539,18 @@ ALTER TABLE articles
 ALTER TABLE articles
   ADD COLUMN IF NOT EXISTS publish_at timestamptz;
 
--- 3. Storage policy (อนุญาต upload รูป)
+-- 3. อนุญาตให้คนทั่วไปอ่านบทความที่เผยแพร่แล้ว (สำคัญมาก!)
+ALTER TABLE articles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public_read_published" ON articles
+  FOR SELECT TO anon, authenticated
+  USING (published = true);
+
+CREATE POLICY "admin_all" ON articles
+  FOR ALL TO authenticated
+  USING (true) WITH CHECK (true);
+
+-- 4. Storage policy (อนุญาต upload รูป)
 CREATE POLICY "allow_upload" ON storage.objects
   FOR INSERT TO anon, authenticated
   WITH CHECK (bucket_id = 'article-images');

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getArticles } from "@/lib/data";
 import ArticleGrid from "@/components/ArticleGrid";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "บทความและความรู้",
   description: "คู่มือ เคล็ดลับการเดินทาง การเตรียมตัว และความรู้อิสลามที่เป็นประโยชน์เรื่องอุมเราะห์และฮัจญ์",
