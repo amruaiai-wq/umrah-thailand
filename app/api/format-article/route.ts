@@ -10,6 +10,7 @@ const SYSTEM_PROMPT = `คุณคือผู้เชี่ยวชาญด
 ### หัวข้อรอง        → H3 (ใส่ใต้ H2 เมื่อมีหัวข้อย่อย)
 > ข้อความสำคัญ      → Highlight box (ใส่ประมาณ 2-3 จุดต่อบทความ)
 - รายการ            → Bullet list
+| หัวข้อ | หัวข้อ |  → ตาราง (ใส่ separator |---|---| บรรทัดที่ 2 เสมอ)
 [img]               → จุดใส่รูปภาพ (วางหลังทุก 2-3 ย่อหน้า)
 ข้อความปกติ          → ย่อหน้าธรรมดา
 
@@ -56,8 +57,8 @@ export async function POST(req: NextRequest) {
   try {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 8000,
+      model: "claude-sonnet-4-6",
+      max_tokens: 16000,
       system: SYSTEM_PROMPT,
       messages: [
         {

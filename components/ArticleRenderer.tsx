@@ -7,13 +7,23 @@ type Block =
   | { type: "p"; text: string }
   | { type: "highlight"; text: string }
   | { type: "img"; index: number }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  | { type: "table"; headers: string[]; rows: string[][] };
+
+function parseTableLine(line: string): string[] {
+  return line.split("|").map((c) => c.trim()).filter((_, i, a) => i > 0 && i < a.length - 1);
+}
+
+function isTableSeparator(line: string): boolean {
+  return /^\|[\s|:-]+\|$/.test(line.trim());
+}
 
 function parseBody(body: string): Block[] {
   const lines = body.split("\n");
   const blocks: Block[] = [];
   let listItems: string[] = [];
   let imgCount = 0;
+  let tableLines: string[] = [];
 
   const flushList = () => {
     if (listItems.length) {
@@ -22,8 +32,27 @@ function parseBody(body: string): Block[] {
     }
   };
 
+  const flushTable = () => {
+    if (tableLines.length >= 2) {
+      const headers = parseTableLine(tableLines[0]);
+      const rows = tableLines.slice(2).map(parseTableLine).filter((r) => r.length > 0);
+      if (headers.length) blocks.push({ type: "table", headers, rows });
+    }
+    tableLines = [];
+  };
+
   for (const raw of lines) {
     const line = raw.trimEnd();
+
+    // Table lines
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      flushList();
+      tableLines.push(line);
+      continue;
+    } else if (tableLines.length) {
+      flushTable();
+    }
+
     if (!line.trim()) { flushList(); continue; }
 
     if (line.startsWith("## ")) {
@@ -48,6 +77,7 @@ function parseBody(body: string): Block[] {
     }
   }
   flushList();
+  flushTable();
   return blocks;
 }
 
@@ -131,6 +161,21 @@ export default function ArticleRenderer({
                 <li key={j}>{it}</li>
               ))}
             </ul>
+          );
+        if (b.type === "table")
+          return (
+            <div key={i} className="art-table-wrap">
+              <table className="art-table">
+                <thead>
+                  <tr>{b.headers.map((h, j) => <th key={j}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {b.rows.map((row, j) => (
+                    <tr key={j}>{row.map((cell, k) => <td key={k}>{cell}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         if (b.type === "img") {
           const src = images[b.index];
