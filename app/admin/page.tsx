@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { Article, Sponsor } from "@/lib/types";
 import { GRADIENTS } from "@/data/seed";
@@ -351,6 +351,25 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
   const [aiLoading, setAiLoading] = useState(false);
   const [aiDone, setAiDone] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertLink = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = body.slice(start, end) || "ข้อความ";
+    const url = prompt("ใส่ URL ที่ต้องการลิงก์:", "https://");
+    if (!url || !url.startsWith("http")) return;
+    const inserted = `[${selected}](${url})`;
+    const newBody = body.slice(0, start) + inserted + body.slice(end);
+    setBody(newBody);
+    setAiDone(false);
+    setTimeout(() => {
+      el.focus();
+      el.selectionStart = el.selectionEnd = start + inserted.length;
+    }, 0);
+  };
 
   const formatWithAI = async () => {
     if (!body.trim()) { alert("กรุณาใส่เนื้อหาก่อน"); return; }
@@ -426,21 +445,31 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
                 เนื้อหา
                 {!isEdit && <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: ".8rem", marginLeft: 8 }}>วางเนื้อหาดิบ แล้วกด AI จัดการ</span>}
               </label>
-              <button
-                type="button"
-                className={`ai-format-btn${aiDone ? " ai-done" : ""}`}
-                onClick={formatWithAI}
-                disabled={aiLoading}
-              >
-                {aiLoading
-                  ? <><span className="ai-spin">⏳</span> AI กำลังจัด...</>
-                  : aiDone
-                  ? <>✓ จัดหน้าแล้ว</>
-                  : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> AI จัดการ</>
-                }
-              </button>
+              <div style={{ display: "flex", gap: 6 }}>
+                <button type="button" className="link-insert-btn" onClick={insertLink} title="แทรกลิงก์">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                  </svg>
+                  แทรกลิงก์
+                </button>
+                <button
+                  type="button"
+                  className={`ai-format-btn${aiDone ? " ai-done" : ""}`}
+                  onClick={formatWithAI}
+                  disabled={aiLoading}
+                >
+                  {aiLoading
+                    ? <><span className="ai-spin">⏳</span> AI กำลังจัด...</>
+                    : aiDone
+                    ? <>✓ จัดหน้าแล้ว</>
+                    : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> AI จัดการ</>
+                  }
+                </button>
+              </div>
             </div>
             <textarea
+              ref={textareaRef}
               value={body}
               onChange={(e) => { setBody(e.target.value); setAiDone(false); }}
               placeholder={"วางเนื้อหาดิบที่นี่ เช่น:\n\nอุมเราะห์คือการเดินทางไปยังนครมักกะฮ์...\nขั้นตอนแรกคือการสวมใส่ชุดอิหรอม...\n\nจากนั้นกด AI จัดการ — จะจัดหัวข้อ คำโปรย หมวดหมู่ให้อัตโนมัติ"}

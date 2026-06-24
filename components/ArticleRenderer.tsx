@@ -1,6 +1,25 @@
 "use client";
 import { slugifyTh } from "@/lib/articleUtils";
 
+// Parse inline [text](url) markdown links within a text string
+function renderInline(text: string): React.ReactNode {
+  const pattern = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > last) parts.push(text.slice(last, match.index));
+    parts.push(
+      <a key={match.index} href={match[2]} target="_blank" rel="noopener noreferrer" className="art-link">
+        {match[1]}
+      </a>
+    );
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length > 0 ? parts : text;
+}
+
 type Block =
   | { type: "h2"; text: string; id: string }
   | { type: "h3"; text: string; id: string }
@@ -134,7 +153,7 @@ export default function ArticleRenderer({
               {b.text}
             </h3>
           );
-        if (b.type === "p") return <p key={i}>{b.text}</p>;
+        if (b.type === "p") return <p key={i}>{renderInline(b.text)}</p>;
         if (b.type === "highlight")
           return (
             <div key={i} className="art-highlight">
@@ -158,7 +177,7 @@ export default function ArticleRenderer({
           return (
             <ul key={i} className="art-list">
               {b.items.map((it, j) => (
-                <li key={j}>{it}</li>
+                <li key={j}>{renderInline(it)}</li>
               ))}
             </ul>
           );
