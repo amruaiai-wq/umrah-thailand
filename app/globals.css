@@ -602,8 +602,14 @@ footer.site{background:#0a0a0a;color:rgba(255,255,255,.6);padding:60px 0 26px;ma
 .art-figure{margin:40px 0;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px -12px rgba(0,0,0,.18)}
 .art-img-body{width:100%;height:auto;display:block;max-height:460px;object-fit:cover}
 
+/* Reference link */
+.art-ref{margin-top:40px;padding:14px 18px;background:var(--bg-2);border-radius:10px;border-left:3px solid var(--navy);display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.art-ref-label{font-size:.8rem;font-weight:700;color:var(--navy);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.art-ref-link{font-size:.82rem;color:#2563eb;word-break:break-all;text-decoration:underline;text-underline-offset:3px}
+.art-ref-link:hover{color:#1d4ed8}
+
 /* Back button */
-.art-back{margin-top:52px;padding-top:32px;border-top:1px solid var(--line-soft)}
+.art-back{margin-top:32px;padding-top:32px;border-top:1px solid var(--line-soft)}
 
 /* Sidebar */
 .art-sidebar{position:sticky;top:96px}

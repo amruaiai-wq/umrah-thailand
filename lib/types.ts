@@ -41,6 +41,7 @@ export interface Article {
   images?: string[];
   published: boolean;
   publish_at?: string; // ISO datetime — if set and in future, hidden from public
+  ref_url?: string;   // source/reference URL shown at bottom + helps Google indexing
 }
 
 export interface Sponsor {

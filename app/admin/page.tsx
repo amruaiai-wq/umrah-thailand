@@ -348,6 +348,8 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
   const [images, setImages] = useState<string[]>(item?.images ?? []);
   const [schedMode, setSchedMode] = useState<"now" | "later">(item?.publish_at ? "later" : "now");
   const [publishAt, setPublishAt] = useState(item?.publish_at ?? "");
+  const [customSlug, setCustomSlug] = useState(item?.slug ?? "");
+  const [refUrl, setRefUrl] = useState(item?.ref_url ?? "");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiDone, setAiDone] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -410,7 +412,8 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
       images,
       published: true,
       publish_at: schedMode === "later" && publishAt ? publishAt : undefined,
-      slug: item?.slug || slugify(title),
+      slug: customSlug.trim() || item?.slug || slugify(title),
+      ref_url: refUrl.trim() || undefined,
     }, item?.id);
   };
 
@@ -532,7 +535,38 @@ function ArticleModal({ item, onClose, onSave }: { item?: Article; onClose: () =
             )}
           </div>
 
-          {/* 6. Gradient color (collapsed) */}
+          {/* 6. URL & Refer */}
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+            <div className="field" style={{ flex: "1 1 200px" }}>
+              <label>
+                URL บทความ (ภาษาอังกฤษ)
+                <small style={{ color: "var(--muted)", fontWeight: 400, marginLeft: 6 }}>/articles/...</small>
+              </label>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: "var(--muted)", fontSize: ".85rem", whiteSpace: "nowrap" }}>/articles/</span>
+                <input
+                  value={customSlug}
+                  onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
+                  placeholder="umrah-guide-2026"
+                  style={{ flex: 1 }}
+                />
+              </div>
+            </div>
+            <div className="field" style={{ flex: "1 1 200px" }}>
+              <label>
+                ลิงก์อ้างอิง (Refer URL)
+                <small style={{ color: "var(--muted)", fontWeight: 400, marginLeft: 6 }}>ช่วย Google index</small>
+              </label>
+              <input
+                value={refUrl}
+                onChange={(e) => setRefUrl(e.target.value)}
+                placeholder="https://..."
+                type="url"
+              />
+            </div>
+          </div>
+
+          {/* 7. Gradient color (collapsed) */}
           <details className="field">
             <summary className="color-pick-summary">สีพื้นหลัง (ใช้ถ้าไม่มีรูป)</summary>
             <div className="swatches" style={{ marginTop: 8 }}>

@@ -113,6 +113,15 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                 <p style={{ color: "var(--muted)", fontStyle: "italic" }}>เนื้อหาเต็มกำลังจัดเตรียม</p>
               )}
 
+              {a.ref_url && (
+                <div className="art-ref">
+                  <span className="art-ref-label">แหล่งอ้างอิง</span>
+                  <a href={a.ref_url} target="_blank" rel="noopener noreferrer" className="art-ref-link">
+                    {a.ref_url}
+                  </a>
+                </div>
+              )}
+
               <div className="art-back">
                 <Link className="btn btn-outline" href="/articles">← กลับสู่บทความทั้งหมด</Link>
               </div>
