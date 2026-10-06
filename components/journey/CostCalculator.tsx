@@ -1,59 +1,63 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
 import { useLang, type Lang, type L } from "./i18n";
 
 /* ── copy ─────────────────────────────────────────────────── */
 
 const C = {
-  eyebrow: { th: "เครื่องมือวางแผน", en: "Planning tool", ar: "أداة التخطيط" },
-  title: { th: "คำนวณค่าใช้จ่ายอุมเราะห์", en: "Umrah Cost Calculator", ar: "حاسبة تكاليف العمرة" },
+  kicker: { th: "ออกแบบทริปเอง", en: "Build your own trip", ar: "صمّم رحلتك" },
+  title: { th: "ออกแบบอุมเราะห์ของคุณเอง ทีละรายการ", en: "Build your own Umrah, line by line", ar: "صمّم عمرتك بنفسك، بندًا بندًا" },
   sub: {
-    th: "เลือกระดับแพ็กเกจ จำนวนคน และจำนวนคืน ระบบประมาณราคาให้ทันที และปรับละเอียดได้ทุกรายการ",
-    en: "Pick a package level, group size and nights — get an instant estimate, then fine-tune every line.",
-    ar: "اختر مستوى الباقة وعدد الأشخاص والليالي لتحصل على تقدير فوري، ثم عدّل كل بند كما تشاء.",
+    th: "ไม่ต้องจำใจซื้อแพ็กเกจสำเร็จรูป เลือกสายการบิน โรงแรม รถ ไกด์ อาหาร และซิยาเราะฮ์ได้เองทุกบรรทัด ราคาเปลี่ยนให้ดูทันที แล้วส่งแผนนี้ให้ทีมงานช่วยจัด",
+    en: "No fixed package to settle for. Pick the airline, hotels, transport, guide, meals and ziyarah yourself — the price updates with every change — then send the plan to our team.",
+    ar: "لا حاجة إلى باقة جاهزة. اختر الطيران والفنادق والنقل والمرشد والوجبات والزيارات بنفسك، ويتحدّث السعر مع كل تغيير، ثم أرسل الخطة إلى فريقنا.",
   },
-  tier: { th: "ระดับแพ็กเกจ", en: "Package level", ar: "مستوى الباقة" },
-  custom: { th: "กำหนดเอง", en: "Custom", ar: "مخصّص" },
-  from: { th: "ต่อคน", en: "per person", ar: "للشخص" },
-  travelers: { th: "จำนวนผู้เดินทาง", en: "Travellers", ar: "عدد المسافرين" },
+  statLines: { th: "หมวดที่เลือกเองได้", en: "lines you choose", ar: "بنود تختارها" },
+  statOpts: { th: "ตัวเลือกให้ผสมกัน", en: "options to mix", ar: "خيارًا للمزج" },
+  statFee: { th: "ค่าวางแผนกับทีมงาน", en: "planning fee", ar: "رسوم التخطيط" },
+  start: { th: "เริ่มจากแพ็กเกจ", en: "Start from a preset", ar: "ابدأ من باقة" },
+  startHint: { th: "แล้วปรับทุกบรรทัดด้านล่างได้ตามใจ", en: "then change any line below", ar: "ثم عدّل أي بند بالأسفل" },
+  edited: { th: "ปรับเอง", en: "edited", ar: "معدّل" },
+  editedN: { th: "บรรทัดที่ปรับเอง", en: "lines edited", ar: "بنود معدّلة" },
+  reset: { th: "คืนค่าแพ็กเกจ", en: "Reset to preset", ar: "إعادة الباقة" },
+  pp: { th: "/ คน", en: "/ person", ar: "/ للشخص" },
+  travelers: { th: "ผู้เดินทาง", en: "Travellers", ar: "المسافرون" },
   people: { th: "คน", en: "people", ar: "أشخاص" },
   nMakkah: { th: "คืนที่มักกะฮ์", en: "Nights in Makkah", ar: "ليالٍ في مكة" },
   nMadinah: { th: "คืนที่มะดีนะฮ์", en: "Nights in Madinah", ar: "ليالٍ في المدينة" },
   nights: { th: "คืน", en: "nights", ar: "ليالٍ" },
-  details: { th: "ปรับรายละเอียดเอง", en: "Customise the details", ar: "تخصيص التفاصيل" },
-  airline: { th: "สายการบิน", en: "Airline", ar: "شركة الطيران" },
-  hotel: { th: "โรงแรม", en: "Hotel", ar: "الفندق" },
-  transport: { th: "รถรับส่ง (ต่อวัน)", en: "Transport (per day)", ar: "النقل (يوميًا)" },
-  guide: { th: "ไกด์", en: "Guide", ar: "المرشد" },
-  food: { th: "อาหาร", en: "Meals", ar: "الوجبات" },
-  extras: { th: "ซิยาเราะฮ์และทัวร์เสริม", en: "Ziyarah & extra tours", ar: "الزيارات والجولات الإضافية" },
-  visa: { th: "วีซ่า", en: "Visa", ar: "التأشيرة" },
   flight: { th: "ตั๋วเครื่องบิน", en: "Flights", ar: "الطيران" },
+  subFlight: { th: "ราคาต่อคน", en: "per person", ar: "للشخص" },
+  hotel: { th: "โรงแรม", en: "Hotels", ar: "الفنادق" },
+  subHotel: { th: "ต่อห้องต่อคืน · มักกะฮ์ / มะดีนะฮ์", en: "per room per night · Makkah / Madinah", ar: "للغرفة لليلة · مكة / المدينة" },
+  transport: { th: "รถรับส่ง", en: "Transport", ar: "النقل" },
+  subTransport: { th: "ต่อวัน ทั้งกลุ่ม", en: "per day, whole group", ar: "يوميًا للمجموعة" },
+  guide: { th: "ไกด์", en: "Guide", ar: "المرشد" },
+  subGuide: { th: "ทั้งทริป ทั้งกลุ่ม", en: "whole trip, whole group", ar: "للرحلة والمجموعة" },
+  food: { th: "อาหาร", en: "Meals", ar: "الوجبات" },
+  subFood: { th: "ต่อคนต่อวัน", en: "per person per day", ar: "للشخص يوميًا" },
+  extras: { th: "ซิยาเราะฮ์และทัวร์เสริม", en: "Ziyarah & extra tours", ar: "الزيارات والجولات" },
+  subExtras: { th: "เลือกได้หลายรายการ ทั้งกลุ่ม", en: "pick any, whole group", ar: "اختر ما تشاء للمجموعة" },
+  visa: { th: "วีซ่าอุมเราะห์", en: "Umrah visa", ar: "تأشيرة العمرة" },
+  subVisa: { th: "รวมให้อัตโนมัติ ต่อคน", en: "included automatically, per person", ar: "مضافة تلقائيًا للشخص" },
+  none: { th: "ยังไม่ได้เลือก", en: "none selected", ar: "لم يُختر شيء" },
+  receipt: { th: "ใบประเมินราคา", en: "Your estimate", ar: "تقدير رحلتك" },
+  days: { th: "วัน", en: "days", ar: "أيام" },
+  rooms: { th: "ห้อง", en: "rooms", ar: "غرف" },
   total: { th: "รวมโดยประมาณ", en: "Estimated total", ar: "الإجمالي التقديري" },
   perPerson: { th: "ตกคนละ", en: "Per person", ar: "للشخص الواحد" },
-  rooms: { th: "ห้องพัก (ห้องละ 2 คน)", en: "rooms (2 per room)", ar: "غرف (شخصان لكل غرفة)" },
-  days: { th: "วัน", en: "days", ar: "أيام" },
+  line: { th: "ส่งแผนนี้ให้ทีมงานทาง LINE", en: "Send this plan to us on LINE", ar: "أرسل هذه الخطة عبر LINE" },
   note: {
     th: "เป็นราคาประมาณการ อาจเปลี่ยนแปลงตามช่วงเวลาเดินทางและความพร้อมของบริการ",
     en: "An estimate only — prices vary with travel dates and availability.",
     ar: "السعر تقديري وقد يتغيّر حسب موعد السفر وتوفّر الخدمات.",
   },
-  line: { th: "ส่งแผนนี้ให้ทีมงานทาง LINE", en: "Send this plan to us on LINE", ar: "أرسل هذه الخطة إلينا عبر LINE" },
-  popular: { th: "ยอดนิยม", en: "Popular", ar: "الأكثر طلبًا" },
+  plan: { th: "แผนอุมเราะห์ของฉัน", en: "My Umrah plan", ar: "خطة عمرتي" },
 } satisfies Record<string, L>;
 
-const ic = (d: string) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
-);
-const TIER_ICONS = [
-  ic("M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"),
-  ic("M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 10h.01M15 10h.01"),
-  ic("M2 8l4.5 4L12 4l5.5 8L22 8l-2 11H4z"),
-];
-
 export const LineIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M24 10.3C24 4.9 18.6.6 12 .6S0 4.9 0 10.3c0 4.8 4.3 8.8 10 9.6.4.1.9.3 1.1.6.1.3.1.8 0 1.1l-.2 1c0 .3-.2 1.2 1 .6 1.3-.5 6.9-4.1 9.4-7C23.2 14.4 24 12.5 24 10.3zM7.7 13.2H5.3c-.3 0-.6-.3-.6-.6V7.8c0-.3.3-.6.6-.6s.6.3.6.6v4.1h1.8c.3 0 .6.3.6.6s-.3.7-.6.7zm2.5-.6c0 .3-.3.6-.6.6s-.6-.3-.6-.6V7.8c0-.3.3-.6.6-.6s.6.3.6.6v4.8zm5.7 0c0 .3-.2.5-.4.6h-.2c-.2 0-.4-.1-.5-.3l-2.4-3.3v2.9c0 .3-.3.6-.6.6s-.6-.3-.6-.6V7.8c0-.3.2-.5.4-.6h.2c.2 0 .4.1.5.3l2.5 3.3V7.8c0-.3.3-.6.6-.6s.6.3.6.6v4.8zm3.9-3c.3 0 .6.3.6.6s-.3.6-.6.6h-1.8v1.1h1.8c.3 0 .6.3.6.6s-.3.6-.6.6h-2.4c-.3 0-.6-.3-.6-.6V7.8c0-.3.3-.6.6-.6h2.4c.3 0 .6.3.6.6s-.3.6-.6.6h-1.8v1.2h1.8z" />
   </svg>
 );
@@ -137,12 +141,7 @@ function compute(p: PlannerPrices, sel: Sel, n: number, mk: number, md: number) 
   return { parts, rooms, days, perPerson, total: perPerson * n };
 }
 
-const PART_KEYS = ["flight", "hotel", "visa", "transport", "food", "guide", "extras"] as const;
-const PART_LABEL: Record<(typeof PART_KEYS)[number], L> = {
-  flight: C.flight, hotel: C.hotel, visa: C.visa, transport: C.transport, food: C.food, guide: C.guide, extras: C.extras,
-};
-
-/* ── small UI pieces ──────────────────────────────────────── */
+/* ── count-up ─────────────────────────────────────────────── */
 
 function useCountUp(target: number, ms = 650) {
   const [v, setV] = useState(target);
@@ -163,51 +162,57 @@ function useCountUp(target: number, ms = 650) {
   return Math.round(v);
 }
 
+type PartKey = "flight" | "hotel" | "transport" | "guide" | "food" | "extras" | "visa";
+
+/* ── small UI pieces ──────────────────────────────────────── */
+
 function Stepper({ label, value, min, max, unit, onChange }: {
   label: string; value: number; min: number; max: number; unit: string; onChange: (v: number) => void;
 }) {
   return (
-    <div className="uc-field">
-      <span className="uc-label">{label}</span>
-      <div className="uc-stepper">
-        <button type="button" aria-label="−" onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min}>−</button>
-        <output>{value} <small>{unit}</small></output>
-        <button type="button" aria-label="+" onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max}>+</button>
+    <div className="ul-basic">
+      <span className="ul-label">{label}</span>
+      <div className="ul-stepper">
+        <button type="button" aria-label={`${label} −`} onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min}>−</button>
+        <output aria-live="polite"><b>{value}</b> {unit}</output>
+        <button type="button" aria-label={`${label} +`} onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max}>+</button>
       </div>
     </div>
   );
 }
 
-function Slider({ label, value, min, max, unit, onChange }: {
-  label: string; value: number; min: number; max: number; unit: string; onChange: (v: number) => void;
+function Row({ no, label, sub, edited, editedLabel, amount, children }: {
+  no: number; label: string; sub: string; edited?: boolean; editedLabel: string; amount: string; children: ReactNode;
 }) {
-  const pct = ((value - min) / (max - min)) * 100;
   return (
-    <label className="uc-field">
-      <span className="uc-label">{label} <b>{value} {unit}</b></span>
-      <input
-        type="range" min={min} max={max} value={value}
-        style={{ ["--pct" as string]: `${pct}%` }}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </label>
+    <li className={`ul-row${edited ? " is-edited" : ""}`}>
+      <span className="ul-no">{String(no).padStart(2, "0")}</span>
+      <div className="ul-head">
+        <h3>{label}</h3>
+        <p>{sub}</p>
+        {edited && <span className="ul-flag">{editedLabel}</span>}
+      </div>
+      <div className="ul-opts">{children}</div>
+      {/* re-keyed so the value flashes when it changes */}
+      <output className="ul-amt" key={amount}>{amount}</output>
+    </li>
   );
 }
 
-function Chips({ label, options, value, onPick }: {
-  label: string; options: { name: string; sub?: string }[]; value: number; onPick: (i: number) => void;
+function Opt({ on, name, price, multi, onClick }: {
+  on: boolean; name: string; price?: string; multi?: boolean; onClick: () => void;
 }) {
   return (
-    <div className="uc-field">
-      <span className="uc-label">{label}</span>
-      <div className="uc-chips">
-        {options.map((o, i) => (
-          <button key={i} type="button" className={i === value ? "on" : ""} aria-pressed={i === value} onClick={() => onPick(i)}>
-            {o.name}{o.sub && <small>{o.sub}</small>}
-          </button>
-        ))}
-      </div>
-    </div>
+    <button
+      type="button"
+      role={multi ? "checkbox" : "radio"}
+      aria-checked={on}
+      className={`ul-opt${on ? " on" : ""}`}
+      onClick={onClick}
+    >
+      <span>{name}</span>
+      {price && <small>{price}</small>}
+    </button>
   );
 }
 
@@ -221,142 +226,177 @@ export default function CostCalculator() {
   const [md, setMd] = useState(3);
   const [tier, setTier] = useState<TierId>("std");
   const [over, setOver] = useState<Partial<Sel>>({});
-  const [open, setOpen] = useState(false);
 
   const baht = (v: number) => `${num(v)} ฿`;
   const tierDef = TIERS.find((x) => x.id === tier)!;
-  const sel: Sel = { ...tierSel(tierDef, n, prices), ...over };
-  const isCustom = Object.keys(over).length > 0;
+  const preset = tierSel(tierDef, n, prices);
+  const sel: Sel = { ...preset, ...over };
   const res = compute(prices, sel, n, mk, md);
+
+  // A line counts as edited only when it actually differs from the preset.
+  const isEdited = (k: keyof Sel) =>
+    k in over && JSON.stringify([...[sel[k]].flat()].sort()) !== JSON.stringify([...[preset[k]].flat()].sort());
+  const editedCount = (["airline", "hotel", "transport", "guide", "food", "extras"] as const).filter(isEdited).length;
 
   const tierPrices = useMemo(
     () => TIERS.map((x) => compute(prices, tierSel(x, n, prices), n, mk, md).perPerson),
     [prices, n, mk, md],
   );
+  const optionCount =
+    prices.airlines.length + prices.hotelStars.length + prices.transports.length +
+    prices.guides.length + prices.foodOptions.length + prices.extras.length;
 
   const total = useCountUp(res.total);
   const pp = useCountUp(res.perPerson);
-  const sum = Object.values(res.parts).reduce((a, b) => a + b, 0) || 1;
 
   const pickTier = (id: TierId) => { setTier(id); setOver({}); };
   const set = <K extends keyof Sel>(k: K, v: Sel[K]) => setOver((o) => ({ ...o, [k]: v }));
   const toggleExtra = (i: number) =>
     set("extras", sel.extras.includes(i) ? sel.extras.filter((x) => x !== i) : [...sel.extras, i]);
 
-  const hotel = prices.hotelStars[sel.hotel];
+  const name = {
+    airline: optName(prices.airlines[sel.airline]?.name ?? "", lang),
+    hotel: optName(prices.hotelStars[sel.hotel]?.label ?? "", lang),
+    transport: optName(prices.transports[sel.transport]?.name ?? "", lang),
+    guide: optName(prices.guides[sel.guide]?.name ?? "", lang),
+    food: optName(prices.foodOptions[sel.food]?.name ?? "", lang),
+    extras: sel.extras.map((i) => optName(prices.extras[i]?.name ?? "", lang)).join(", "),
+  };
+
+  const receipt: { k: PartKey; label: L; detail: string }[] = [
+    { k: "flight", label: C.flight, detail: name.airline },
+    { k: "hotel", label: C.hotel, detail: name.hotel },
+    { k: "visa", label: C.visa, detail: `× ${n}` },
+    { k: "transport", label: C.transport, detail: name.transport },
+    { k: "guide", label: C.guide, detail: name.guide },
+    { k: "food", label: C.food, detail: name.food },
+    { k: "extras", label: C.extras, detail: name.extras || t(C.none) },
+  ];
+
   const lineText = [
-    `【${t(C.title)}】`,
-    `${t(C.tier)}: ${isCustom ? t(C.custom) : t(tierDef.name)}`,
-    `${t(C.travelers)}: ${n} ${t(C.people)}`,
-    `${t(C.nMakkah)}: ${mk} · ${t(C.nMadinah)}: ${md}`,
-    `${t(C.airline)}: ${optName(prices.airlines[sel.airline]?.name ?? "", lang)}`,
-    `${t(C.hotel)}: ${optName(hotel?.label ?? "", lang)}`,
-    `${t(C.transport)}: ${optName(prices.transports[sel.transport]?.name ?? "", lang)}`,
-    `${t(C.guide)}: ${optName(prices.guides[sel.guide]?.name ?? "", lang)}`,
-    `${t(C.food)}: ${optName(prices.foodOptions[sel.food]?.name ?? "", lang)}`,
-    sel.extras.length ? `${t(C.extras)}: ${sel.extras.map((i) => optName(prices.extras[i]?.name ?? "", lang)).join(", ")}` : "",
+    `【${t(C.plan)}】`,
+    `${t(C.start)}: ${t(tierDef.name)}${editedCount ? ` (+${editedCount} ${t(C.editedN)})` : ""}`,
+    `${t(C.travelers)}: ${n} ${t(C.people)} · ${t(C.nMakkah)} ${mk} · ${t(C.nMadinah)} ${md}`,
+    ...receipt.filter((r) => res.parts[r.k] > 0).map((r) => `${t(r.label)}: ${r.detail} — ${baht(res.parts[r.k])}`),
     `${t(C.total)}: ${baht(res.total)} (${t(C.perPerson)} ${baht(res.perPerson)})`,
-  ].filter(Boolean).join("\n");
+  ].join("\n");
 
   return (
-    <div className="wrap uc">
-      <header className="uc-head">
-        <span className="uj-eyebrow">{t(C.eyebrow)}</span>
-        <h2>{t(C.title)}</h2>
-        <p>{t(C.sub)}</p>
+    <div className="wrap ul">
+      <header className="ul-intro">
+        <div className="ul-intro-main">
+          <span className="ul-kicker">{t(C.kicker)}</span>
+          <h2>{t(C.title)}</h2>
+        </div>
+        <div className="ul-intro-side">
+          <p>{t(C.sub)}</p>
+          <dl className="ul-stats">
+            <div><dt>6</dt><dd>{t(C.statLines)}</dd></div>
+            <div><dt>{optionCount}</dt><dd>{t(C.statOpts)}</dd></div>
+            <div><dt>0 ฿</dt><dd>{t(C.statFee)}</dd></div>
+          </dl>
+        </div>
       </header>
 
-      <div className="uc-grid">
-        <div className="uc-form">
-          <div className="uc-field">
-            <span className="uc-label">{t(C.tier)}</span>
-            <div className="uc-tiers">
+      <div className="ul-grid">
+        <div className="ul-sheet">
+          <div className="ul-presets">
+            <div className="ul-presets-label">
+              <span className="ul-label">{t(C.start)}</span>
+              <span className="ul-hint">{t(C.startHint)}</span>
+            </div>
+            <div className="ul-tabs" role="radiogroup" aria-label={t(C.start)}>
               {TIERS.map((x, i) => {
-                const on = !isCustom && tier === x.id;
-                const ts = tierSel(x, n, prices);
+                const on = tier === x.id;
                 return (
-                  <button key={x.id} type="button" className={`uc-tier${on ? " on" : ""}`} aria-pressed={on} onClick={() => pickTier(x.id)}>
-                    {x.id === "std" && <span className="uc-pop">{t(C.popular)}</span>}
-                    <span className="uc-tier-top">
-                      <span className="uc-tier-ic" aria-hidden="true">{TIER_ICONS[i]}</span>
-                      <span className="uc-check" aria-hidden="true">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                      </span>
-                    </span>
+                  <button key={x.id} type="button" role="radio" aria-checked={on} className={`ul-tab${on ? " on" : ""}`} onClick={() => pickTier(x.id)}>
                     <b>{t(x.name)}</b>
-                    <span>{optName(prices.hotelStars[ts.hotel]?.label ?? "", lang)} · {optName(prices.airlines[ts.airline]?.name ?? "", lang)}</span>
-                    <em>{baht(tierPrices[i])} <small>/ {t(C.from)}</small></em>
+                    <span>{baht(tierPrices[i])} {t(C.pp)}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <Stepper label={t(C.travelers)} value={n} min={1} max={20} unit={t(C.people)} onChange={setN} />
-          <div className="uc-two">
-            <Slider label={t(C.nMakkah)} value={mk} min={1} max={20} unit={t(C.nights)} onChange={setMk} />
-            <Slider label={t(C.nMadinah)} value={md} min={0} max={15} unit={t(C.nights)} onChange={setMd} />
+          <div className="ul-basics">
+            <Stepper label={t(C.travelers)} value={n} min={1} max={20} unit={t(C.people)} onChange={setN} />
+            <Stepper label={t(C.nMakkah)} value={mk} min={1} max={20} unit={t(C.nights)} onChange={setMk} />
+            <Stepper label={t(C.nMadinah)} value={md} min={0} max={15} unit={t(C.nights)} onChange={setMd} />
           </div>
 
-          <button type="button" className={`uc-toggle${open ? " open" : ""}`} aria-expanded={open} onClick={() => setOpen(!open)}>
-            {t(C.details)} {isCustom && <span className="uc-badge">{t(C.custom)}</span>}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M6 9l6 6 6-6" /></svg>
-          </button>
-
-          {open && (
-            <div className="uc-details">
-              <Chips label={t(C.airline)} value={sel.airline} onPick={(i) => set("airline", i)}
-                options={prices.airlines.map((a) => ({ name: optName(a.name, lang), sub: baht(a.price) }))} />
-              <Chips label={t(C.hotel)} value={sel.hotel} onPick={(i) => set("hotel", i)}
-                options={prices.hotelStars.map((h) => ({ name: optName(h.label, lang), sub: `${baht(h.makkah)} / ${baht(h.madinah)}` }))} />
-              <Chips label={t(C.transport)} value={sel.transport} onPick={(i) => set("transport", i)}
-                options={prices.transports.map((x) => ({ name: optName(x.name, lang), sub: baht(x.price) }))} />
-              <Chips label={t(C.guide)} value={sel.guide} onPick={(i) => set("guide", i)}
-                options={prices.guides.map((x) => ({ name: optName(x.name, lang), sub: x.price ? baht(x.price) : undefined }))} />
-              <Chips label={t(C.food)} value={sel.food} onPick={(i) => set("food", i)}
-                options={prices.foodOptions.map((x) => ({ name: optName(x.name, lang), sub: x.pricePerDay ? `${baht(x.pricePerDay)}/${t(C.days)}` : undefined }))} />
-              <div className="uc-field">
-                <span className="uc-label">{t(C.extras)}</span>
-                <div className="uc-chips">
-                  {prices.extras.map((x, i) => {
-                    const on = sel.extras.includes(i);
-                    return (
-                      <button key={i} type="button" className={on ? "on" : ""} aria-pressed={on} onClick={() => toggleExtra(i)}>
-                        {on ? "✓ " : "+ "}{optName(x.name, lang)}<small>{baht(x.price)}</small>
-                      </button>
-                    );
-                  })}
-                </div>
+          <ol className="ul-rows">
+            <Row no={1} label={t(C.flight)} sub={t(C.subFlight)} edited={isEdited("airline")} editedLabel={t(C.edited)} amount={baht(res.parts.flight)}>
+              {prices.airlines.map((a, i) => (
+                <Opt key={i} on={sel.airline === i} name={optName(a.name, lang)} price={baht(a.price)} onClick={() => set("airline", i)} />
+              ))}
+            </Row>
+            <Row no={2} label={t(C.hotel)} sub={t(C.subHotel)} edited={isEdited("hotel")} editedLabel={t(C.edited)} amount={baht(res.parts.hotel)}>
+              {prices.hotelStars.map((h, i) => (
+                <Opt key={i} on={sel.hotel === i} name={optName(h.label, lang)} price={`${num(h.makkah)} / ${num(h.madinah)}`} onClick={() => set("hotel", i)} />
+              ))}
+            </Row>
+            <Row no={3} label={t(C.transport)} sub={t(C.subTransport)} edited={isEdited("transport")} editedLabel={t(C.edited)} amount={baht(res.parts.transport)}>
+              {prices.transports.map((x, i) => (
+                <Opt key={i} on={sel.transport === i} name={optName(x.name, lang)} price={baht(x.price)} onClick={() => set("transport", i)} />
+              ))}
+            </Row>
+            <Row no={4} label={t(C.guide)} sub={t(C.subGuide)} edited={isEdited("guide")} editedLabel={t(C.edited)} amount={baht(res.parts.guide)}>
+              {prices.guides.map((x, i) => (
+                <Opt key={i} on={sel.guide === i} name={optName(x.name, lang)} price={x.price ? baht(x.price) : undefined} onClick={() => set("guide", i)} />
+              ))}
+            </Row>
+            <Row no={5} label={t(C.food)} sub={t(C.subFood)} edited={isEdited("food")} editedLabel={t(C.edited)} amount={baht(res.parts.food)}>
+              {prices.foodOptions.map((x, i) => (
+                <Opt key={i} on={sel.food === i} name={optName(x.name, lang)} price={x.pricePerDay ? baht(x.pricePerDay) : undefined} onClick={() => set("food", i)} />
+              ))}
+            </Row>
+            <Row no={6} label={t(C.extras)} sub={t(C.subExtras)} edited={isEdited("extras")} editedLabel={t(C.edited)} amount={baht(res.parts.extras)}>
+              {prices.extras.map((x, i) => (
+                <Opt key={i} multi on={sel.extras.includes(i)} name={optName(x.name, lang)} price={baht(x.price)} onClick={() => toggleExtra(i)} />
+              ))}
+            </Row>
+            <li className="ul-row is-fixed">
+              <span className="ul-no">07</span>
+              <div className="ul-head">
+                <h3>{t(C.visa)}</h3>
+                <p>{t(C.subVisa)}</p>
               </div>
-            </div>
-          )}
+              <div className="ul-opts"><span className="ul-fixed">{baht(prices.visaPrice)} × {n}</span></div>
+              <output className="ul-amt" key={res.parts.visa}>{baht(res.parts.visa)}</output>
+            </li>
+          </ol>
         </div>
 
-        <aside className="uc-result" aria-live="polite">
-          <span className="uc-label">{t(C.total)}</span>
-          <div className="uc-total">{num(total)} <span>฿</span></div>
-          <div className="uc-pp">{t(C.perPerson)} <b>{baht(pp)}</b></div>
-
-          <div className="uc-bar" role="img" aria-label={t(C.total)}>
-            {PART_KEYS.filter((k) => res.parts[k] > 0).map((k) => (
-              <span key={k} className={`seg seg-${k}`} style={{ width: `${(res.parts[k] / sum) * 100}%` }} />
-            ))}
+        <aside className="ul-receipt" aria-live="polite">
+          <div className="ul-receipt-head">
+            <span className="ul-label">{t(C.receipt)}</span>
+            <span className="ul-meta">{n} {t(C.people)} · {res.days} {t(C.days)} · {res.rooms} {t(C.rooms)}</span>
           </div>
-          <ul className="uc-legend">
-            {PART_KEYS.filter((k) => res.parts[k] > 0).map((k) => (
-              <li key={k}>
-                <i className={`seg-${k}`} />
-                <span>{t(PART_LABEL[k])}</span>
-                <b>{baht(res.parts[k])}</b>
+          <p className="ul-basis">
+            {t(tierDef.name)}
+            {editedCount > 0 && (
+              <>
+                <span className="ul-basis-n"> + {editedCount} {t(C.editedN)}</span>
+                <button type="button" className="ul-reset" onClick={() => setOver({})}>{t(C.reset)}</button>
+              </>
+            )}
+          </p>
+          <ul className="ul-lines">
+            {receipt.filter((r) => res.parts[r.k] > 0).map((r) => (
+              <li key={r.k}>
+                <span className="ul-line-k">{t(r.label)}<small>{r.detail}</small></span>
+                <span className="ul-dots" aria-hidden="true" />
+                <b>{baht(res.parts[r.k])}</b>
               </li>
             ))}
           </ul>
-          <p className="uc-meta">
-            {res.rooms} {t(C.rooms)} · {res.days} {t(C.days)}
-          </p>
-
+          <div className="ul-total">
+            <span className="ul-label">{t(C.total)}</span>
+            <strong>{num(total)}<span> ฿</span></strong>
+            <span className="ul-pp">{t(C.perPerson)} <b>{baht(pp)}</b></span>
+          </div>
           <a
-            className="uc-cta"
+            className="ul-cta"
             href={`https://line.me/R/oaMessage/@umrahthailand/?${encodeURIComponent(lineText)}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -364,7 +404,7 @@ export default function CostCalculator() {
             <LineIcon />
             {t(C.line)}
           </a>
-          <p className="uc-note">{t(C.note)}</p>
+          <p className="ul-note">{t(C.note)}</p>
         </aside>
       </div>
     </div>
