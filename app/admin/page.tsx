@@ -237,7 +237,7 @@ function PricesPanel({
         </div>
       </div>
       <p style={{ color: "var(--muted)", fontSize: ".88rem", marginBottom: 20 }}>
-        ราคาจะแสดงในหน้าคำนวณค่าใช้จ่าย (/planner) ทันทีหลังบันทึก
+        ราคาจะแสดงในเครื่องคำนวณค่าใช้จ่ายบนหน้าแรกทันทีหลังบันทึก
       </p>
 
       {/* VISA */}

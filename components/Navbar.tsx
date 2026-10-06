@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LangSwitch } from "@/components/journey/i18n";
 
 const LINKS = [
   { href: "/", label: "หน้าหลัก" },
-  { href: "/umrah", label: "วิธีทำอุมเราะห์" },
   { href: "/plan", label: "สถานที่ประวัติศาสตร์" },
   { href: "/articles", label: "บทความ" },
-  { href: "/planner", label: "คำนวณค่าใช้จ่าย" },
+  { href: "/#ch-calc", label: "คำนวณค่าใช้จ่าย" },
   { href: "/about", label: "ติดต่อเรา" },
 ];
 
@@ -48,6 +48,8 @@ export default function Navbar() {
           ))}
         </ul>
         <div className="nav-right">
+          {/* only the homepage story is translated */}
+          {pathname === "/" && <div className="nav-lang"><LangSwitch /></div>}
           <Link className="btn btn-orange" href="/contact">
             ปรึกษาฟรี →
           </Link>

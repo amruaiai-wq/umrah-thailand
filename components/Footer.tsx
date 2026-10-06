@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <h5>ความรู้</h5>
             <ul>
-              <li><Link href="/umrah">คู่มืออุมเราะห์</Link></li>
+              <li><Link href="/">คู่มืออุมเราะห์</Link></li>
               <li><Link href="/articles">บทความ</Link></li>
             </ul>
             <h5 style={{ marginTop: 20 }}>เว็บไซต์</h5>

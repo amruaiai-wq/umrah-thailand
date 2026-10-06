@@ -45,7 +45,7 @@ export default function HajjPage() {
       <section className="steps-wrap">
         <div className="wrap narrow">
           <div className="note" style={{ marginBottom: 30 }}>
-            ℹ️ <div>หน้านี้แสดงเฉพาะ <b>ขั้นตอนเฉพาะของฮัจญ์</b> ส่วนการอิหรอม ตะวาฟ และสะแอ ใช้หลักการเดียวกับ <Link className="accent" href="/umrah">คู่มืออุมเราะห์</Link></div>
+            ℹ️ <div>หน้านี้แสดงเฉพาะ <b>ขั้นตอนเฉพาะของฮัจญ์</b> ส่วนการอิหรอม ตะวาฟ และสะแอ ใช้หลักการเดียวกับ <Link className="accent" href="/">คู่มืออุมเราะห์</Link></div>
           </div>
           <GuideSteps steps={hajjSteps} />
         </div>
