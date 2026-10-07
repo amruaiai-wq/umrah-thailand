@@ -47,7 +47,7 @@ export default function Footer() {
               <li>กรุงเทพมหานคร</li>
             </ul>
             <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
-              <a href="https://line.me/R/ti/p/@umrahthailand" target="_blank" rel="noopener" className="foot-social foot-line">LINE</a>
+              <a href="https://line.me/R/ti/p/%40024xshvm" target="_blank" rel="noopener" className="foot-social foot-line">LINE</a>
               <a href="https://m.me/umrahthailand" target="_blank" rel="noopener" className="foot-social foot-msng">Messenger</a>
             </div>
           </div>

@@ -397,7 +397,7 @@ export default function CostCalculator() {
           </div>
           <a
             className="ul-cta"
-            href={`https://line.me/R/oaMessage/@umrahthailand/?${encodeURIComponent(lineText)}`}
+            href={`https://line.me/R/oaMessage/%40024xshvm/?${encodeURIComponent(lineText)}`}
             target="_blank"
             rel="noopener noreferrer"
           >

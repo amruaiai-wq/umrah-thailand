@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
   title: "เกี่ยวกับเรา & ติดต่อ | Umrah Thailand",
@@ -117,27 +116,19 @@ export default function AboutPage() {
             <h2>สอบถาม หรือขอรับคำปรึกษาฟรี</h2>
             <p style={{ color: "var(--muted)" }}>ทีมงานยินดีตอบทุกข้อความภายใน 24 ชั่วโมง</p>
           </div>
-          <div className="contact-grid">
-            <ContactForm />
-            <div className="contact-info">
-              <a className="info-card" href="mailto:hello@umrahthailand.com">
-                <div className="ic"><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></div>
-                <div><b>อีเมล</b><span>hello@umrahthailand.com</span></div>
-              </a>
-              <a className="info-card" href="https://wa.me/66800000000">
-                <div className="ic"><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.4A10 10 0 1012 2z" /><path d="M8 9c0 4 3 7 7 7" /></svg></div>
-                <div><b>WhatsApp / LINE</b><span>+66 80-000-0000</span></div>
-              </a>
-              <a className="info-card" href="mailto:ads@umrahthailand.com">
-                <div className="ic"><svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 11l18-8-8 18-2-8z" /></svg></div>
-                <div><b>ฝ่ายโฆษณา / พันธมิตร</b><span>ads@umrahthailand.com</span></div>
-              </a>
-              <div className="socials">
-                <a href="#" aria-label="Facebook"><svg width="20" height="20" fill="currentColor"><path d="M13 6h2V3h-2c-2.2 0-3 1.6-3 3v2H8v3h2v6h3v-6h2.2l.8-3H13V6z" /></svg></a>
-                <a href="#" aria-label="TikTok"><svg width="20" height="20" fill="currentColor"><path d="M13 3v9.5a2.5 2.5 0 11-2-2.45V7.5a5 5 0 105 5V8a5.5 5.5 0 003 .9V5.8A3.3 3.3 0 0116 3h-3z" /></svg></a>
-                <a href="#" aria-label="Instagram"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="14" height="14" rx="4" /><circle cx="10" cy="10" r="3.5" /><circle cx="14.5" cy="5.5" r="1" fill="currentColor" /></svg></a>
+          <div className="contact-grid contact-info" style={{ gap: 16, maxWidth: 880, margin: "0 auto" }}>
+            <a className="info-card" href="https://line.me/R/ti/p/%40024xshvm" target="_blank" rel="noopener noreferrer">
+              <div className="ic" style={{ color: "#06C755" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 10.3C24 4.9 18.6.6 12 .6S0 4.9 0 10.3c0 4.8 4.3 8.8 10 9.6.4.1.9.3 1.1.6.1.3.1.8 0 1.1l-.2 1c0 .3-.2 1.2 1 .6 1.3-.5 6.9-4.1 9.4-7C23.2 14.4 24 12.5 24 10.3z" /></svg>
               </div>
-            </div>
+              <div><b>LINE</b><span>@024xshvm · กดเพื่อเพิ่มเพื่อนและทักแชท</span></div>
+            </a>
+            <a className="info-card" href="https://www.facebook.com/umrahthailand/" target="_blank" rel="noopener noreferrer">
+              <div className="ic" style={{ color: "#0866FF" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5 0 11.1c0 3.5 1.7 6.6 4.5 8.7V24l4.1-2.2c1.1.3 2.2.5 3.4.5 6.6 0 12-5 12-11.1S18.6 0 12 0zm1.2 15-3.1-3.3-6 3.3L10.7 8l3.1 3.3L19.8 8z" /></svg>
+              </div>
+              <div><b>Facebook Messenger</b><span>facebook.com/umrahthailand · ทักแชทเพจ</span></div>
+            </a>
           </div>
         </div>
       </section>

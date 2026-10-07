@@ -275,7 +275,7 @@ function WhyUs() {
           <p>{t(WHY.ctaSub)}</p>
         </div>
         <div className="uw-btns">
-          <a className="uw-btn line" href="https://line.me/R/ti/p/@umrahthailand" target="_blank" rel="noopener noreferrer"><LineIcon /> LINE</a>
+          <a className="uw-btn line" href="https://line.me/R/ti/p/%40024xshvm" target="_blank" rel="noopener noreferrer"><LineIcon /> LINE</a>
           <a className="uw-btn msg" href="https://www.facebook.com/umrahthailand/" target="_blank" rel="noopener noreferrer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5 0 11.1c0 3.5 1.7 6.6 4.5 8.7V24l4.1-2.2c1.1.3 2.2.5 3.4.5 6.6 0 12-5 12-11.1S18.6 0 12 0zm1.2 15-3.1-3.3-6 3.3L10.7 8l3.1 3.3L19.8 8z" /></svg>
             Messenger

@@ -5,7 +5,7 @@ export default function FloatingContact() {
     <div className="float-btns">
       {/* แก้ลิงก์ LINE OA ตรงนี้ */}
       <a
-        href="https://line.me/R/ti/p/@umrahthailand"
+        href="https://line.me/R/ti/p/%40024xshvm"
         target="_blank"
         rel="noopener noreferrer"
         className="float-btn float-line"
