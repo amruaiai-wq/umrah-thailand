@@ -45,4 +45,7 @@ export const EXTRAS = [
   { name: "Jeddah City Tour",   price: 2000 },
 ];
 
-export const VISA_PRICE = 6500;
+export const VISAS = [
+  { name: "วีซ่าอุมเราะห์",   price: 6500 },
+  { name: "วีซ่าท่องเที่ยว",  price: 4700 },
+];

@@ -39,8 +39,8 @@ const C = {
   subFood: { th: "ต่อคนต่อวัน", en: "per person per day", ar: "للشخص يوميًا" },
   extras: { th: "ซิยาเราะฮ์และทัวร์เสริม", en: "Ziyarah & extra tours", ar: "الزيارات والجولات" },
   subExtras: { th: "เลือกได้หลายรายการ ทั้งกลุ่ม", en: "pick any, whole group", ar: "اختر ما تشاء للمجموعة" },
-  visa: { th: "วีซ่าอุมเราะห์", en: "Umrah visa", ar: "تأشيرة العمرة" },
-  subVisa: { th: "รวมให้อัตโนมัติ ต่อคน", en: "included automatically, per person", ar: "مضافة تلقائيًا للشخص" },
+  visa: { th: "วีซ่า", en: "Visa", ar: "التأشيرة" },
+  subVisa: { th: "เลือกประเภทวีซ่า ราคาต่อคน", en: "choose the visa type, per person", ar: "اختر نوع التأشيرة، للشخص" },
   none: { th: "ยังไม่ได้เลือก", en: "none selected", ar: "لم يُختر شيء" },
   receipt: { th: "ใบประเมินราคา", en: "Your estimate", ar: "تقدير رحلتك" },
   days: { th: "วัน", en: "days", ar: "أيام" },
@@ -101,6 +101,8 @@ const NAMES: Record<string, { en: string; ar: string }> = {
   "Al-Ula Tour": { en: "AlUla tour", ar: "جولة العُلا" },
   "ทะเลแดง (Red Sea)": { en: "Red Sea", ar: "البحر الأحمر" },
   "Jeddah City Tour": { en: "Jeddah city tour", ar: "جولة في جدة" },
+  "วีซ่าอุมเราะห์": { en: "Umrah visa", ar: "تأشيرة العمرة" },
+  "วีซ่าท่องเที่ยว": { en: "Tourist e-Visa", ar: "التأشيرة السياحية" },
 };
 
 function optName(name: string, lang: Lang) {
@@ -113,7 +115,7 @@ function optName(name: string, lang: Lang) {
 /* ── pricing ──────────────────────────────────────────────── */
 
 interface Sel {
-  airline: number; hotel: number; transport: number; guide: number; food: number; extras: number[];
+  airline: number; hotel: number; transport: number; guide: number; food: number; extras: number[]; visa: number;
 }
 
 function autoTransport(n: number, vip: boolean, count: number) {
@@ -130,6 +132,7 @@ function tierSel(tier: (typeof TIERS)[number], n: number, p: PlannerPrices): Sel
     guide: clamp(tier.guide, p.guides),
     food: clamp(tier.food, p.foodOptions),
     extras: [],
+    visa: 0,
   };
 }
 
@@ -139,7 +142,7 @@ function compute(p: PlannerPrices, sel: Sel, n: number, mk: number, md: number) 
   const hotel = p.hotelStars[sel.hotel] ?? p.hotelStars[0];
   const parts = {
     flight: (p.airlines[sel.airline]?.price ?? 0) * n,
-    visa: p.visaPrice * n,
+    visa: (p.visas[sel.visa]?.price ?? 0) * n,
     hotel: rooms * (hotel.makkah * mk + hotel.madinah * md),
     transport: (p.transports[sel.transport]?.price ?? 0) * days,
     guide: p.guides[sel.guide]?.price ?? 0,
@@ -246,7 +249,7 @@ export default function CostCalculator() {
   // A line counts as edited only when it actually differs from the preset.
   const isEdited = (k: keyof Sel) =>
     k in over && JSON.stringify([...[sel[k]].flat()].sort()) !== JSON.stringify([...[preset[k]].flat()].sort());
-  const editedCount = (["airline", "hotel", "transport", "guide", "food", "extras"] as const).filter(isEdited).length;
+  const editedCount = (["airline", "hotel", "transport", "guide", "food", "extras", "visa"] as const).filter(isEdited).length;
 
   const tierPrices = useMemo(
     () => TIERS.map((x) => compute(prices, tierSel(x, n, prices), n, mk, md).perPerson),
@@ -254,7 +257,7 @@ export default function CostCalculator() {
   );
   const optionCount =
     prices.airlines.length + prices.hotelStars.length + prices.transports.length +
-    prices.guides.length + prices.foodOptions.length + prices.extras.length;
+    prices.guides.length + prices.foodOptions.length + prices.extras.length + prices.visas.length;
 
   const total = useCountUp(res.total);
   const pp = useCountUp(res.perPerson);
@@ -271,12 +274,13 @@ export default function CostCalculator() {
     guide: optName(prices.guides[sel.guide]?.name ?? "", lang),
     food: optName(prices.foodOptions[sel.food]?.name ?? "", lang),
     extras: sel.extras.map((i) => optName(prices.extras[i]?.name ?? "", lang)).join(", "),
+    visa: optName(prices.visas[sel.visa]?.name ?? "", lang),
   };
 
   const receipt: { k: PartKey; label: L; detail: string }[] = [
     { k: "flight", label: C.flight, detail: name.airline },
     { k: "hotel", label: C.hotel, detail: name.hotel },
-    { k: "visa", label: C.visa, detail: `× ${n}` },
+    { k: "visa", label: C.visa, detail: `${name.visa} × ${n}` },
     { k: "transport", label: C.transport, detail: name.transport },
     { k: "guide", label: C.guide, detail: name.guide },
     { k: "food", label: C.food, detail: name.food },
@@ -310,7 +314,7 @@ export default function CostCalculator() {
         <div className="ul-intro-side">
           <p>{t(C.sub)}</p>
           <dl className="ul-stats">
-            <div><dt>6</dt><dd>{t(C.statLines)}</dd></div>
+            <div><dt>7</dt><dd>{t(C.statLines)}</dd></div>
             <div><dt>{optionCount}</dt><dd>{t(C.statOpts)}</dd></div>
             <div><dt>0 ฿</dt><dd>{t(C.statFee)}</dd></div>
           </dl>
@@ -374,15 +378,11 @@ export default function CostCalculator() {
                 <Opt key={i} multi on={sel.extras.includes(i)} name={optName(x.name, lang)} price={baht(x.price)} onClick={() => toggleExtra(i)} />
               ))}
             </Row>
-            <li className="ul-row is-fixed">
-              <span className="ul-no">07</span>
-              <div className="ul-head">
-                <h3>{t(C.visa)}</h3>
-                <p>{t(C.subVisa)}</p>
-              </div>
-              <div className="ul-opts"><span className="ul-fixed">{baht(prices.visaPrice)} × {n}</span></div>
-              <output className="ul-amt" key={res.parts.visa}>{baht(res.parts.visa)}</output>
-            </li>
+            <Row no={7} label={t(C.visa)} sub={t(C.subVisa)} edited={isEdited("visa")} editedLabel={t(C.edited)} amount={baht(res.parts.visa)}>
+              {prices.visas.map((x, i) => (
+                <Opt key={i} on={sel.visa === i} name={optName(x.name, lang)} price={baht(x.price)} onClick={() => set("visa", i)} />
+              ))}
+            </Row>
           </ol>
         </div>
 

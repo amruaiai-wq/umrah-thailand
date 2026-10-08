@@ -200,7 +200,6 @@ function PricesPanel({
     if (isNaN(n) || n < 0) return;
     setDraft((prev) => {
       const next = JSON.parse(JSON.stringify(prev)) as PlannerPrices;
-      if (section === "visaPrice") return { ...next, visaPrice: n };
       (next[section] as Record<string, number | string>[])[idx][field] = n;
       return next;
     });
@@ -224,6 +223,7 @@ function PricesPanel({
   }
 
   const sections: { label: string; key: keyof PlannerPrices; field: string; field2?: string }[] = [
+    { label: "วีซ่า (ราคาต่อคน)", key: "visas", field: "price" },
     { label: "ตั๋วเครื่องบิน", key: "airlines", field: "price" },
     { label: "การเดินทางภายใน", key: "transports", field: "price" },
     { label: "ไกด์นำทาง", key: "guides", field: "price" },
@@ -245,20 +245,6 @@ function PricesPanel({
       <p style={{ color: "var(--muted)", fontSize: ".88rem", marginBottom: 20 }}>
         ราคาจะแสดงในเครื่องคำนวณค่าใช้จ่ายบนหน้าแรกทันทีหลังบันทึก
       </p>
-
-      {/* VISA */}
-      <div className="price-section">
-        <h4 className="price-section-title">วีซ่า</h4>
-        <div className="price-row">
-          <span className="price-row-name">ค่าวีซ่าต่อคน</span>
-          <input
-            type="number" className="price-input"
-            value={draft.visaPrice}
-            onChange={(e) => setDraft((prev) => ({ ...prev, visaPrice: parseInt(e.target.value, 10) || 0 }))}
-          />
-          <span className="price-unit">฿</span>
-        </div>
-      </div>
 
       {/* HOTEL STARS */}
       <div className="price-section">

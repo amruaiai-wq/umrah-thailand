@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import {
-  AIRLINES, HOTEL_STARS, TRANSPORTS, GUIDES, FOOD_OPTIONS, EXTRAS, VISA_PRICE,
+  AIRLINES, HOTEL_STARS, TRANSPORTS, GUIDES, FOOD_OPTIONS, EXTRAS, VISAS,
 } from "@/data/planner";
 import { getSupabaseBrowser, isSupabaseConfigured } from "@/lib/supabase-client";
 
@@ -12,7 +12,7 @@ export type PlannerPrices = {
   guides: { name: string; price: number }[];
   foodOptions: { name: string; pricePerDay: number }[];
   extras: { name: string; price: number }[];
-  visaPrice: number;
+  visas: { name: string; price: number }[];
 };
 
 const LS_KEY = "ut_planner_prices";
@@ -25,12 +25,12 @@ export function plannerDefaults(): PlannerPrices {
     guides: GUIDES.map((g) => ({ name: g.name, price: g.price })),
     foodOptions: FOOD_OPTIONS.map((f) => ({ name: f.name, pricePerDay: f.pricePerDay })),
     extras: EXTRAS.map((e) => ({ name: e.name, price: e.price })),
-    visaPrice: VISA_PRICE,
+    visas: VISAS.map((v) => ({ name: v.name, price: v.price })),
   };
 }
 
 // Stored prices may predate options added to data/planner — fall back per section.
-function withDefaults(v: Partial<PlannerPrices> | null | undefined): PlannerPrices {
+function withDefaults(v: (Partial<PlannerPrices> & { visaPrice?: number }) | null | undefined): PlannerPrices {
   const d = plannerDefaults();
   if (!v) return d;
   const pick = <K extends keyof PlannerPrices>(k: K) =>
@@ -42,7 +42,10 @@ function withDefaults(v: Partial<PlannerPrices> | null | undefined): PlannerPric
     guides: pick("guides"),
     foodOptions: pick("foodOptions"),
     extras: pick("extras"),
-    visaPrice: typeof v.visaPrice === "number" ? v.visaPrice : d.visaPrice,
+    // Older saves had a single visaPrice: carry it over as the Umrah visa price.
+    visas: Array.isArray(v.visas) && v.visas.length
+      ? v.visas
+      : d.visas.map((x, i) => (i === 0 && typeof v.visaPrice === "number" ? { ...x, price: v.visaPrice } : x)),
   };
 }
 
