@@ -10,7 +10,7 @@ export default function HomePage() {
       <SchemaHowTo
         name="วิธีทำอุมเราะห์ ทีละขั้นตอน พร้อมดุอาอ์และหลักฐาน"
         description="คู่มือการประกอบพิธีอุมเราะห์ 5 ขั้นตอน พร้อมดุอาอ์และหลักฐาน"
-        url="https://umrahthailand.com/"
+        url="https://www.umrahthailand.com/"
         steps={umrahSteps}
       />
       <UmrahStory />

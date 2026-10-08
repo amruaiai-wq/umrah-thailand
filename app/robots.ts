@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin"],
       },
     ],
-    sitemap: "https://umrahthailand.com/sitemap.xml",
-    host: "https://umrahthailand.com",
+    sitemap: "https://www.umrahthailand.com/sitemap.xml",
+    host: "https://www.umrahthailand.com",
   };
 }

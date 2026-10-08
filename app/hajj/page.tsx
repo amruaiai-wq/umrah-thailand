@@ -20,7 +20,7 @@ export default function HajjPage() {
       <SchemaHowTo
         name="วิธีทำฮัจญ์ ทีละขั้นตอน พร้อมดุอาอ์และหลักฐาน"
         description="คู่มือการประกอบพิธีฮัจญ์ในวันที่ 8–13 ซุลฮิจญะฮ์ พร้อมดุอาอ์และหลักฐาน"
-        url="https://umrahthailand.com/hajj"
+        url="https://www.umrahthailand.com/hajj"
         steps={hajjSteps}
       />
 

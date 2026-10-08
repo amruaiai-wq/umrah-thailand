@@ -6,7 +6,7 @@ import FloatingContact from "@/components/FloatingContact";
 import { LangProvider } from "@/components/journey/i18n";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://umrahthailand.com"),
+  metadataBase: new URL("https://www.umrahthailand.com"),
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -36,7 +36,7 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Umrah Thailand",
-  url: "https://umrahthailand.com",
+  url: "https://www.umrahthailand.com",
   inLanguage: "th",
   description: "ศูนย์รวมความรู้การทำอุมเราะห์และฮัจญ์สำหรับมุสลิมไทย",
 };

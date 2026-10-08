@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getArticles } from "@/lib/data";
 
-const BASE = "https://umrahthailand.com";
+const BASE = "https://www.umrahthailand.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = await getArticles(true);
