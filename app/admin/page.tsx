@@ -6,7 +6,7 @@ import { Article, Sponsor } from "@/lib/types";
 import { GRADIENTS } from "@/data/seed";
 import { isSupabaseConfigured, getSupabaseBrowser } from "@/lib/supabase-client";
 import { useAdminData } from "@/components/useAdminData";
-import { usePlannerPrices, type PlannerPrices } from "@/lib/usePlannerPrices";
+import { usePlannerPrices, plannerDefaults, type PlannerPrices } from "@/lib/usePlannerPrices";
 import { useCategories } from "@/lib/useCategories";
 import ImageUploadInput from "@/components/ImageUploadInput";
 import ArticleRenderer from "@/components/ArticleRenderer";
@@ -66,7 +66,7 @@ export default function AdminPage() {
 
 function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }) {
   const d = useAdminData();
-  const { prices, save: savePrices, reset: resetPrices } = usePlannerPrices();
+  const { prices, loaded: pricesLoaded, save: savePrices, reset: resetPrices } = usePlannerPrices();
   const catMgr = useCategories();
   const [tab, setTab] = useState<"articles" | "ads" | "prices" | "cats">("articles");
   const [modal, setModal] = useState<null | { type: "article" | "ad"; item?: Article | Sponsor }>(null);
@@ -110,7 +110,8 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
           </div>
 
           {tab === "prices" ? (
-            <PricesPanel prices={prices} onSave={savePrices} onReset={resetPrices} />
+            // re-keyed so the draft picks up the stored prices once they arrive
+            <PricesPanel key={pricesLoaded ? "loaded" : "loading"} prices={prices} onSave={savePrices} onReset={resetPrices} />
           ) : tab === "cats" ? (
             <CatsPanel cats={catMgr.cats} onAdd={catMgr.add} onRemove={catMgr.remove} onReset={catMgr.reset} />
           ) : tab === "articles" ? (
@@ -189,9 +190,10 @@ function Dashboard({ cloud, onLogout }: { cloud: boolean; onLogout: () => void }
 
 function PricesPanel({
   prices, onSave, onReset,
-}: { prices: PlannerPrices; onSave: (p: PlannerPrices) => void; onReset: () => void }) {
+}: { prices: PlannerPrices; onSave: (p: PlannerPrices) => Promise<string | null>; onReset: () => Promise<string | null> }) {
   const [draft, setDraft] = useState<PlannerPrices>(JSON.parse(JSON.stringify(prices)));
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   function setNum(section: keyof PlannerPrices, idx: number, field: string, val: string) {
     const n = parseInt(val, 10);
@@ -205,16 +207,20 @@ function PricesPanel({
     setSaved(false);
   }
 
-  function doSave() {
-    onSave(draft);
+  async function doSave() {
+    setSaving(true);
+    const error = await onSave(draft);
+    setSaving(false);
+    if (error) { alert("บันทึกราคาไม่สำเร็จ: " + error); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }
 
-  function doReset() {
+  async function doReset() {
     if (!confirm("รีเซ็ตราคาทั้งหมดกลับค่าเริ่มต้น?")) return;
-    onReset();
-    setDraft(JSON.parse(JSON.stringify(prices)));
+    const error = await onReset();
+    if (error) { alert("รีเซ็ตราคาไม่สำเร็จ: " + error); return; }
+    setDraft(plannerDefaults());
   }
 
   const sections: { label: string; key: keyof PlannerPrices; field: string; field2?: string }[] = [
@@ -232,7 +238,7 @@ function PricesPanel({
         <div style={{ display: "flex", gap: 10 }}>
           <button className="btn btn-outline" style={{ fontSize: ".85rem" }} onClick={doReset}>รีเซ็ต</button>
           <button className="btn btn-emerald" style={{ fontSize: ".85rem" }} onClick={doSave}>
-            {saved ? "✓ บันทึกแล้ว" : "บันทึก"}
+            {saving ? "กำลังบันทึก…" : saved ? "✓ บันทึกแล้ว" : "บันทึก"}
           </button>
         </div>
       </div>
@@ -666,7 +672,23 @@ CREATE POLICY "allow_upload" ON storage.objects
 
 CREATE POLICY "allow_read" ON storage.objects
   FOR SELECT TO anon, authenticated
-  USING (bucket_id = 'article-images');`}</pre>
+  USING (bucket_id = 'article-images');
+
+-- 5. ตารางราคาเครื่องคำนวณค่าใช้จ่าย (แท็บ ราคาแพ็กเกจ)
+CREATE TABLE IF NOT EXISTS planner_prices (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  data jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE planner_prices ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "public_read_prices" ON planner_prices
+  FOR SELECT TO anon, authenticated
+  USING (true);
+
+CREATE POLICY "admin_write_prices" ON planner_prices
+  FOR ALL TO authenticated
+  USING (true) WITH CHECK (true);`}</pre>
           <p style={{ marginTop: 10, fontSize: ".82rem", color: "#bbb", lineHeight: 1.7 }}>
             จากนั้นใน Dashboard → Storage:<br />
             สร้าง Bucket ชื่อ <b>article-images</b> → เปิด Public แล้วรัน SQL ด้านบน

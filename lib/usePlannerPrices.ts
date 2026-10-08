@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   AIRLINES, HOTEL_STARS, TRANSPORTS, GUIDES, FOOD_OPTIONS, EXTRAS, VISA_PRICE,
 } from "@/data/planner";
+import { getSupabaseBrowser, isSupabaseConfigured } from "@/lib/supabase-client";
 
 export type PlannerPrices = {
   airlines: { name: string; price: number }[];
@@ -16,7 +17,7 @@ export type PlannerPrices = {
 
 const LS_KEY = "ut_planner_prices";
 
-function defaults(): PlannerPrices {
+export function plannerDefaults(): PlannerPrices {
   return {
     airlines: AIRLINES.map((a) => ({ name: a.name, price: a.price })),
     hotelStars: HOTEL_STARS.map((h) => ({ label: h.label, makkah: h.makkah, madinah: h.madinah })),
@@ -28,29 +29,78 @@ function defaults(): PlannerPrices {
   };
 }
 
-function load(): PlannerPrices {
+// Stored prices may predate options added to data/planner — fall back per section.
+function withDefaults(v: Partial<PlannerPrices> | null | undefined): PlannerPrices {
+  const d = plannerDefaults();
+  if (!v) return d;
+  const pick = <K extends keyof PlannerPrices>(k: K) =>
+    (Array.isArray(v[k]) && (v[k] as unknown[]).length ? v[k] : d[k]) as PlannerPrices[K];
+  return {
+    airlines: pick("airlines"),
+    hotelStars: pick("hotelStars"),
+    transports: pick("transports"),
+    guides: pick("guides"),
+    foodOptions: pick("foodOptions"),
+    extras: pick("extras"),
+    visaPrice: typeof v.visaPrice === "number" ? v.visaPrice : d.visaPrice,
+  };
+}
+
+function lsLoad(): PlannerPrices {
   try {
     const v = localStorage.getItem(LS_KEY);
-    return v ? JSON.parse(v) : defaults();
+    return withDefaults(v ? JSON.parse(v) : null);
   } catch {
-    return defaults();
+    return plannerDefaults();
   }
 }
 
 export function usePlannerPrices() {
-  const [prices, setPrices] = useState<PlannerPrices>(defaults);
+  const [prices, setPrices] = useState<PlannerPrices>(plannerDefaults);
+  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => { setPrices(load()); }, []);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const sb = isSupabaseConfigured() ? getSupabaseBrowser() : null;
+      if (sb) {
+        const { data } = await sb.from("planner_prices").select("data").eq("id", 1).maybeSingle();
+        // No row yet: show prices an admin saved locally before prices moved to Supabase
+        if (alive) setPrices(data?.data ? withDefaults(data.data as Partial<PlannerPrices>) : lsLoad());
+      } else if (alive) {
+        setPrices(lsLoad());
+      }
+      if (alive) setLoaded(true);
+    })();
+    return () => { alive = false; };
+  }, []);
 
-  const save = useCallback((next: PlannerPrices) => {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch {}
+  /** Returns an error message, or null on success. */
+  const save = useCallback(async (next: PlannerPrices): Promise<string | null> => {
+    const sb = isSupabaseConfigured() ? getSupabaseBrowser() : null;
+    if (sb) {
+      const { error } = await sb
+        .from("planner_prices")
+        .upsert({ id: 1, data: next, updated_at: new Date().toISOString() });
+      if (error) return error.message;
+    } else {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch {}
+    }
     setPrices(next);
+    return null;
   }, []);
 
-  const reset = useCallback(() => {
-    try { localStorage.removeItem(LS_KEY); } catch {}
-    setPrices(defaults());
+  const reset = useCallback(async (): Promise<string | null> => {
+    const sb = isSupabaseConfigured() ? getSupabaseBrowser() : null;
+    if (sb) {
+      const { error } = await sb.from("planner_prices").delete().eq("id", 1);
+      if (error) return error.message;
+    } else {
+      try { localStorage.removeItem(LS_KEY); } catch {}
+    }
+    setPrices(plannerDefaults());
+    return null;
   }, []);
 
-  return { prices, save, reset };
+  return { prices, loaded, save, reset };
 }
