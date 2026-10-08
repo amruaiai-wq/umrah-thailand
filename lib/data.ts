@@ -1,6 +1,5 @@
 import { Article, Sponsor } from "@/lib/types";
 import { seedArticles, seedSponsors } from "@/data/seed";
-import { STATIC_ARTICLES } from "@/data/static-articles";
 
 function sbConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -31,27 +30,21 @@ async function sbFetch<T>(path: string, label?: string): Promise<T[] | null> {
 }
 
 // --- Articles ---
-// Articles kept in code (data/static-articles) join the list; a database article with the same slug wins.
-function withStatic(list: Article[]): Article[] {
-  const slugs = new Set(list.map((a) => a.slug));
-  return [...STATIC_ARTICLES.filter((a) => !slugs.has(a.slug)), ...list];
-}
-
 export async function getArticles(onlyPublished = true): Promise<Article[]> {
   // Keep SQL simple — filter publish_at in JS to avoid PostgREST or() issues
   let path = "articles?order=id.desc";
   if (onlyPublished) path += "&published=eq.true";
   const data = await sbFetch<Article>(path);
   if (data === null) {
-    return withStatic(onlyPublished
+    return onlyPublished
       ? seedArticles.filter((a) => a.published && (!a.publish_at || new Date(a.publish_at) <= new Date()))
-      : seedArticles);
+      : seedArticles;
   }
   if (onlyPublished) {
     const now = new Date();
-    return withStatic(data.filter((a) => !a.publish_at || new Date(a.publish_at) <= now));
+    return data.filter((a) => !a.publish_at || new Date(a.publish_at) <= now);
   }
-  return withStatic(data);
+  return data;
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
@@ -61,9 +54,8 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     `articles?slug=eq.${encodeURIComponent(decoded)}&limit=1`,
     `slug-lookup:${decoded}`
   );
-  const local = STATIC_ARTICLES.find((a) => a.slug === decoded) ?? null;
-  if (data === null) return seedArticles.find((a) => a.slug === decoded) ?? local;
-  return data[0] ?? local;
+  if (data === null) return seedArticles.find((a) => a.slug === decoded) ?? null;
+  return data[0] ?? null;
 }
 
 // --- Sponsors ---
