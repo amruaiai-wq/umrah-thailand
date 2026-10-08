@@ -93,10 +93,11 @@ export const SCENES: StoryScene[] = [
     },
     points: [
       { th: "พาสปอร์ตอายุเหลือไม่น้อยกว่า 6 เดือน และวีซ่าอุมเราะห์", en: "A passport valid for 6+ months and an Umrah visa", ar: "جواز سفر صالح لستة أشهر على الأقل وتأشيرة العمرة" },
-      { th: "ใบรับรองวัคซีนไข้กาฬหลังแอ่น (Meningococcal ACWY)", en: "Meningococcal ACWY vaccination certificate", ar: "شهادة لقاح الحمى الشوكية (ACWY)" },
+      { th: "แนะนำให้ฉีดวัคซีนไข้หวัดใหญ่ก่อนเดินทาง", en: "A flu vaccination before you travel is recommended", ar: "يُنصح بأخذ لقاح الإنفلونزا قبل السفر" },
       { th: "ผู้ชาย: ชุดอิห์รอม 2 ชุด รองเท้าแตะแบบเปิดข้อเท้า และเข็มขัดใส่เงิน", en: "Men: two sets of ihram, open sandals and a money belt", ar: "للرجال: إحرامان، ونعال مكشوفة الكعبين، وحزام للنقود" },
-      { th: "ผู้หญิง: ชุดหลวมที่ปกปิดเอาเราะฮ์ครบ จะเป็นสีใดก็ได้", en: "Women: loose clothing that fully covers the awrah, in any colour", ar: "للنساء: لباس فضفاض ساتر للعورة بأي لون" },
-      { th: "ติดตั้งแอป Nusuk ไว้จองเข้ารอเฎาะฮ์ที่มะดีนะฮ์", en: "Install the Nusuk app — needed to book the Rawdah in Madinah", ar: "ثبّت تطبيق «نسك» لحجز زيارة الروضة الشريفة" },
+      { th: "ผู้หญิง: เตรียมชุดสีดำที่หลวมและปกปิดเอาเราะฮ์ครบ", en: "Women: loose black clothing that fully covers the awrah", ar: "للنساء: لباس أسود فضفاض ساتر للعورة" },
+      { th: "กระเป๋าใบเล็กส่วนตัวสำหรับเก็บของมีค่า เช่น พาสปอร์ต เงิน และโทรศัพท์", en: "A small personal bag for valuables — passport, money and phone", ar: "حقيبة صغيرة خاصة للأغراض الثمينة كالجواز والنقود والهاتف" },
+      { th: "ติดตั้งแอป Nusuk ไว้จองเข้าเราะเฎาะฮ์ที่มะดีนะฮ์", en: "Install the Nusuk app — needed to book the Rawdah in Madinah", ar: "ثبّت تطبيق «نسك» لحجز زيارة الروضة الشريفة" },
       { th: "ยาประจำตัว ครีมกันผิวเสียดสีแบบไม่มีน้ำหอม และขวดน้ำพกพา", en: "Personal medication, unscented anti-chafing cream and a water bottle", ar: "أدويتك الخاصة، وكريم غير معطّر ضد الاحتكاك، وقارورة ماء" },
     ],
   },
@@ -106,12 +107,12 @@ export const SCENES: StoryScene[] = [
     kicker: { th: "บทที่ 2 · สนามบิน", en: "Chapter 2 · The airport", ar: "الفصل الثاني · المطار" },
     title: { th: "สนามบินสุวรรณภูมิ", en: "Suvarnabhumi Airport, Bangkok", ar: "مطار سوفارنابومي، بانكوك" },
     lead: {
-      th: "มาถึงสนามบินก่อนเวลาอย่างน้อย 3 ชั่วโมง ผู้ชายหลายคนอาบน้ำและสวมผ้าอิห์รอมตั้งแต่ที่บ้านหรือที่สนามบิน เพราะเปลี่ยนชุดบนเครื่องได้ลำบาก แต่ยังไม่ต้องตั้งเนียต",
-      en: "Arrive at least 3 hours early. Many men bathe and put on the ihram garments at home or at the airport, since changing on board is difficult — but don't make the intention yet.",
-      ar: "احضر إلى المطار قبل ثلاث ساعات على الأقل. يغتسل كثير من الرجال ويلبسون الإحرام في البيت أو المطار لصعوبة ذلك في الطائرة، دون أن ينووا بعد.",
+      th: "มาถึงสนามบินก่อนเวลาอย่างน้อย 3 ชั่วโมง เตรียมชุดอิห์รอมไว้ในกระเป๋าถือขึ้นเครื่อง เพื่อเปลี่ยนชุดบนเครื่องก่อนถึงเขตมีกอต แต่ยังไม่ต้องตั้งเนียต",
+      en: "Arrive at least 3 hours early. Pack your ihram garments in your carry-on so you can change on the plane before the miqat — but don't make the intention yet.",
+      ar: "احضر إلى المطار قبل ثلاث ساعات على الأقل، وضع ملابس الإحرام في حقيبة اليد لتلبسها في الطائرة قبل الميقات، دون أن تنوي بعد.",
     },
     points: [
-      { th: "เช็กอินและโหลดกระเป๋า เก็บผ้าอิห์รอมสำรองไว้ในกระเป๋าถือ", en: "Check in and drop your bags — keep a spare ihram in your carry-on", ar: "أنهِ إجراءات السفر واحتفظ بإحرام احتياطي في حقيبة اليد" },
+      { th: "เช็กอินและโหลดกระเป๋า แยกชุดอิห์รอมไว้ในกระเป๋าถือขึ้นเครื่อง", en: "Check in and drop your bags — keep the ihram in your carry-on", ar: "أنهِ إجراءات السفر واحتفظ بملابس الإحرام في حقيبة اليد" },
       { th: "ละหมาดที่ห้องละหมาดในสนามบินก่อนขึ้นเครื่อง", en: "Pray in the airport prayer room before boarding", ar: "صلِّ في مصلى المطار قبل الصعود إلى الطائرة" },
       { th: "บินตรงไปเจดดาห์ประมาณ 9 ชั่วโมง หรือเลือกเที่ยวบินที่ต่อเครื่องที่ตะวันออกกลาง", en: "Around 9 hours direct to Jeddah, or connect through a Gulf hub", ar: "نحو تسع ساعات مباشرة إلى جدة، أو عبر الترانزيت في الخليج" },
     ],
@@ -133,8 +134,9 @@ export const SCENES: StoryScene[] = [
     },
     points: [
       { th: "ห้ามใช้น้ำหอม ตัดผม ตัดเล็บ", en: "No perfume, no cutting hair, no clipping nails", ar: "يُمنع التطيّب وقصّ الشعر وتقليم الأظافر" },
-      { th: "ผู้ชาย: ห้ามสวมเสื้อผ้าที่ตัดเย็บ และห้ามคลุมศีรษะ", en: "Men: no stitched clothing and no head covering", ar: "الرجال: لا مخيط ولا تغطية للرأس" },
+      { th: "ผู้ชาย: ห้ามสวมเสื้อผ้าที่ตัดเย็บ รวมถึงกางเกงใน และห้ามคลุมศีรษะ", en: "Men: no stitched clothing — underwear included — and no head covering", ar: "الرجال: لا مخيط ولو كان لباسًا داخليًا، ولا تغطية للرأس" },
       { th: "ผู้หญิง: ห้ามสวมนิกอบและถุงมือ", en: "Women: no niqab and no gloves", ar: "النساء: لا نقاب ولا قفازين" },
+      { th: "ห้ามมีเพศสัมพันธ์ และห้ามสัมผัสคู่ครองด้วยอารมณ์ใคร่", en: "No sexual relations and no intimate touching between spouses", ar: "لا جماع ولا مباشرة بشهوة" },
       { th: "ห้ามทะเลาะวิวาท ห้ามล่าสัตว์ และห้ามประกอบพิธีนิกาห์", en: "No quarrelling, no hunting and no marriage contracts", ar: "لا جدال ولا صيد ولا عقد نكاح" },
     ],
     duas: [
@@ -170,8 +172,8 @@ export const SCENES: StoryScene[] = [
     },
     points: [
       { th: "ทีมงานของเรารอรับที่สนามบิน ดูแลเรื่องกระเป๋าและรถให้", en: "Our team meets you at arrivals and takes care of luggage and transport", ar: "يستقبلك فريقنا في صالة الوصول ويتولّى الأمتعة والنقل" },
-      { th: "เช็กอินโรงแรม พักผ่อนให้เพียงพอก่อนเริ่มประกอบพิธี", en: "Check in to the hotel and rest well before starting the rites", ar: "سجّل في الفندق وخذ قسطًا من الراحة قبل أداء المناسك" },
-      { th: "อาบน้ำละหมาด (วุฎูอ์) ก่อนไปมัสยิด เพราะการตอวาฟต้องมีน้ำละหมาด", en: "Make wudu before heading out — tawaf requires ritual purity", ar: "توضّأ قبل الخروج، فالطواف تُشترط له الطهارة" },
+      { th: "เช็กอินโรงแรม พักผ่อนให้เพียงพอก่อนเริ่มประกอบพิธีอุมเราะห์", en: "Check in to the hotel and rest well before performing Umrah", ar: "سجّل في الفندق وخذ قسطًا من الراحة قبل أداء العمرة" },
+      { th: "อาบน้ำละหมาด (วุฎูอ์) ก่อนไปมัสยิด เพื่อละหมาดและเริ่มประกอบพิธีอุมเราะห์", en: "Make wudu before heading to the mosque, to pray and begin the rites of Umrah", ar: "توضّأ قبل الذهاب إلى المسجد لتصلّي وتبدأ مناسك العمرة" },
     ],
     facts: [
       { k: { th: "ระยะทาง", en: "Distance", ar: "المسافة" }, v: { th: "~80 กม.", en: "~80 km", ar: "~٨٠ كم" } },
@@ -185,9 +187,9 @@ export const SCENES: StoryScene[] = [
     title: { th: "มองเห็นกะอ์บะฮ์ครั้งแรก", en: "Your First Sight of the Kaaba", ar: "النظرة الأولى إلى الكعبة" },
     rule: RULES.sunnah,
     lead: {
-      th: "ก้าวเท้าขวาเข้ามัสยิดพร้อมกล่าวดุอาอ์ เมื่อมองเห็นกะอ์บะฮ์ครั้งแรก ให้ยกมือขอดุอาอ์ หลายคนน้ำตาไหลในช่วงเวลานี้",
-      en: "Step in with your right foot while reciting the supplication. When your eyes first meet the Kaaba, raise your hands and make du'a — a moment that moves many to tears.",
-      ar: "ادخل بقدمك اليمنى مع دعاء دخول المسجد، وإذا وقعت عينك على الكعبة فارفع يديك بالدعاء؛ لحظة تفيض فيها دموع الكثيرين.",
+      th: "ก้าวเท้าขวาเข้ามัสยิดพร้อมกล่าวดุอาอ์ เมื่อมองเห็นกะอ์บะฮ์ ให้ยกมือขอดุอาอ์ตามที่ปรารถนา",
+      en: "Step in with your right foot while reciting the supplication. When you see the Kaaba, raise your hands and ask Allah for whatever you wish.",
+      ar: "ادخل بقدمك اليمنى مع دعاء دخول المسجد، وإذا رأيت الكعبة فارفع يديك وادعُ بما شئت.",
     },
     points: [
       { th: "หยุดกล่าวตัลบียะฮ์เมื่อเริ่มตอวาฟ", en: "Stop reciting the Talbiyah once tawaf begins", ar: "تُقطع التلبية عند بدء الطواف" },
@@ -254,6 +256,7 @@ export const SCENES: StoryScene[] = [
     points: [
       { th: "ร็อกอะฮ์แรกอ่านซูเราะฮ์อัลกาฟิรูน ร็อกอะฮ์ที่สองอ่านอัลอิคลาศ", en: "Recite al-Kafirun in the first rak'ah and al-Ikhlas in the second", ar: "يقرأ في الأولى «الكافرون» وفي الثانية «الإخلاص»" },
       { th: "ท่านนบี ﷺ กล่าวว่า «น้ำซัมซัมนั้นเป็นไปตามเจตนาของผู้ดื่ม»", en: "The Prophet ﷺ said: “Zamzam is for whatever it is drunk for.”", ar: "قال النبي ﷺ: «ماءُ زمزمَ لِما شُرِبَ له»" },
+      { th: "นอกจากดื่มแล้ว ให้ใช้น้ำซัมซัมล้างหน้าและรดศีรษะด้วย", en: "Besides drinking it, wash your face and pour some Zamzam over your head", ar: "واغسل وجهك بماء زمزم وصبّ منه على رأسك" },
     ],
     duas: [
       {
@@ -282,16 +285,22 @@ export const SCENES: StoryScene[] = [
     ],
     duas: [
       {
-        label: { th: "เมื่อใกล้ถึงเนินเศาะฟา (ครั้งแรกเท่านั้น)", en: "Approaching Safa (first time only)", ar: "عند الدنوّ من الصفا (أول مرة)" },
-        ar: "إِنَّ الصَّفَا وَالْمَرْوَةَ مِن شَعَائِرِ اللَّهِ ۖ نَبْدَأُ بِمَا بَدَأَ اللَّهُ بِهِ",
-        tr: { th: "อินนัศเศาะฟา วัลมัรวะตะ มินชะอาอิริลลาฮ์... นับดะอุ บิมา บะดะอัลลอฮุ บิฮ์", en: "Innaṣ-ṣafā wal-marwata min shaʿāʾirillāh… nabdaʾu bimā badaʾallāhu bih" },
-        mn: { th: "แท้จริงเศาะฟาและมัรวะฮ์เป็นส่วนหนึ่งจากเครื่องหมายแห่งอัลลอฮ์... เราเริ่มจากที่อัลลอฮ์ทรงเริ่มไว้", en: "Indeed, Safa and Marwah are among the symbols of Allah… We begin with what Allah began with." },
+        label: { th: "เมื่อใกล้ถึงเนินเศาะฟา (ครั้งแรกเท่านั้น) อ่านอายะฮ์อัลกุรอาน", en: "Approaching Safa (first time only) — recite the Qur'anic verse", ar: "عند الدنوّ من الصفا (أول مرة) — تلاوة الآية" },
+        ar: "إِنَّ الصَّفَا وَالْمَرْوَةَ مِن شَعَائِرِ اللَّهِ",
+        tr: { th: "อินนัศเศาะฟา วัลมัรวะตะ มิน ชะอาอิริลลาฮ์", en: "Innaṣ-ṣafā wal-marwata min shaʿāʾirillāh" },
+        mn: { th: "แท้จริงเศาะฟาและมัรวะฮ์เป็นส่วนหนึ่งจากเครื่องหมายแห่งอัลลอฮ์ (อัลบะเกาะเราะฮ์ 2:158)", en: "Indeed, Safa and Marwah are among the symbols of Allah. (al-Baqarah 2:158)" },
       },
       {
-        label: { th: "บนเนินเศาะฟาและมัรวะฮ์ (3 ครั้ง)", en: "On Safa and Marwah (three times)", ar: "على الصفا والمروة (ثلاثًا)" },
-        ar: "اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
-        tr: { th: "อัลลอฮุอักบัร ลาอิลาฮะอิลลัลลอฮุ วะห์ดะฮู ลาชะรีกะละฮ์ ละฮุลมุลกุ วะละฮุลฮัมด์ วะฮุวะ อะลา กุลลิ ชัยอิน เกาะดีร", en: "Allāhu akbar, lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamd, wa huwa ʿalā kulli shayʾin qadīr" },
-        mn: { th: "อัลลอฮ์ทรงยิ่งใหญ่ ไม่มีพระเจ้าอื่นใดนอกจากอัลลอฮ์เพียงองค์เดียว ไม่มีภาคี อำนาจและการสรรเสริญเป็นของพระองค์ และพระองค์ทรงเดชานุภาพเหนือทุกสิ่ง", en: "Allah is the Greatest. There is no god but Allah alone, without partner. His is the dominion and His is the praise, and He has power over all things." },
+        label: { th: "กล่าวต่อหลังจากอ่านอายะฮ์อัลกุรอานข้างต้น", en: "Then say, after reciting the verse", ar: "ثم يقول بعد تلاوة الآية" },
+        ar: "أَبْدَأُ بِمَا بَدَأَ اللَّهُ بِهِ",
+        tr: { th: "อับดะอุ บิมา บะดะอัลลอฮุ บิฮ์", en: "Abdaʾu bimā badaʾallāhu bih" },
+        mn: { th: "ข้าพเจ้าขอเริ่มจากที่อัลลอฮ์ทรงเริ่มไว้", en: "I begin with what Allah began with." },
+      },
+      {
+        label: { th: "บนเนินเศาะฟาและมัรวะฮ์ หันหน้าไปทางกะอ์บะฮ์ (กล่าว 3 ครั้ง สลับกับขอดุอาอ์)", en: "On Safa and Marwah, facing the Kaaba (three times, with your own du'as in between)", ar: "على الصفا والمروة مستقبلًا الكعبة (ثلاثًا يتخلّلها الدعاء)" },
+        ar: "اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ، أَنْجَزَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزَابَ وَحْدَهُ",
+        tr: { th: "อัลลอฮุอักบัร ลาอิลาฮะอิลลัลลอฮุ วะห์ดะฮู ลาชะรีกะละฮ์ ละฮุลมุลกุ วะละฮุลฮัมด์ วะฮุวะ อะลา กุลลิ ชัยอิน เกาะดีร ลาอิลาฮะอิลลัลลอฮุ วะห์ดะฮ์ อันญะซะ วะอ์ดะฮ์ วะนะศ็อร็อ อับดะฮ์ วะฮะซะมัลอะห์ซาบะ วะห์ดะฮ์", en: "Allāhu akbar, lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamd, wa huwa ʿalā kulli shayʾin qadīr. Lā ilāha illallāhu waḥdah, anjaza waʿdah, wa naṣara ʿabdah, wa hazamal-aḥzāba waḥdah" },
+        mn: { th: "อัลลอฮ์ทรงยิ่งใหญ่ ไม่มีพระเจ้าอื่นใดนอกจากอัลลอฮ์เพียงองค์เดียว ไม่มีภาคี อำนาจและการสรรเสริญเป็นของพระองค์ และพระองค์ทรงเดชานุภาพเหนือทุกสิ่ง ไม่มีพระเจ้าอื่นใดนอกจากอัลลอฮ์เพียงองค์เดียว พระองค์ทรงทำให้สัญญาของพระองค์เป็นจริง ทรงช่วยเหลือบ่าวของพระองค์ และทรงทำให้กองทัพพันธมิตรพ่ายแพ้โดยลำพังพระองค์", en: "Allah is the Greatest. There is no god but Allah alone, without partner. His is the dominion and His is the praise, and He has power over all things. There is no god but Allah alone; He fulfilled His promise, gave victory to His servant and defeated the confederates alone." },
       },
     ],
   },
@@ -334,7 +343,7 @@ export const SCENES: StoryScene[] = [
       { city: "makkah", name: { th: "ญะบัลนูร · ถ้ำฮิรออ์", en: "Jabal al-Nour · Cave of Hira", ar: "جبل النور · غار حراء" }, d: { th: "สถานที่ที่วะห์ยูแรกถูกประทานลงมา", en: "Where the first revelation descended", ar: "موضع نزول أول الوحي" } },
       { city: "makkah", name: { th: "ญะบัลษูร", en: "Jabal Thawr", ar: "جبل ثور" }, d: { th: "ถ้ำที่ท่านนบี ﷺ และอบูบักรหลบซ่อนระหว่างฮิจญ์เราะฮ์", en: "The cave where the Prophet ﷺ and Abu Bakr sheltered during the Hijrah", ar: "الغار الذي اختبأ فيه النبي ﷺ وأبو بكر في الهجرة" } },
       { city: "makkah", name: { th: "อะเราะฟะฮ์ · มุซดะลิฟะฮ์ · มินา", en: "Arafat · Muzdalifah · Mina", ar: "عرفات · مزدلفة · منى" }, d: { th: "สถานที่ประกอบพิธีฮัจญ์", en: "The sites of the Hajj rites", ar: "مشاعر الحج" } },
-      { city: "madinah", name: { th: "มัสยิดนะบะวีย์ · รอเฎาะฮ์", en: "Masjid an-Nabawi · Rawdah", ar: "المسجد النبوي · الروضة" }, d: { th: "ละหมาดในมัสยิดท่านนบี ﷺ และกล่าวสลาม (จองรอเฎาะฮ์ผ่านแอป Nusuk)", en: "Pray in the Prophet's ﷺ mosque and send salam (book the Rawdah via Nusuk)", ar: "الصلاة في مسجد النبي ﷺ والسلام عليه (احجز الروضة عبر «نسك»)" } },
+      { city: "madinah", name: { th: "มัสยิดนะบะวีย์ · เราะเฎาะฮ์", en: "Masjid an-Nabawi · Rawdah", ar: "المسجد النبوي · الروضة" }, d: { th: "ละหมาดในมัสยิดท่านนบี ﷺ และกล่าวสลาม (จองเราะเฎาะฮ์ผ่านแอป Nusuk)", en: "Pray in the Prophet's ﷺ mosque and send salam (book the Rawdah via Nusuk)", ar: "الصلاة في مسجد النبي ﷺ والسلام عليه (احجز الروضة عبر «نسك»)" } },
       { city: "madinah", name: { th: "มัสยิดกุบาอ์", en: "Masjid Quba", ar: "مسجد قباء" }, d: { th: "ละหมาดที่นี่ได้ผลบุญเทียบเท่าอุมเราะห์ (อิบนุมาญะฮ์)", en: "Praying here carries the reward of an Umrah (Ibn Majah)", ar: "الصلاة فيه كأجر عمرة (ابن ماجه)" } },
       { city: "madinah", name: { th: "ภูเขาอุฮุด", en: "Mount Uhud", ar: "جبل أحد" }, d: { th: "สมรภูมิอุฮุด และสุสานท่านฮัมซะฮ์", en: "The battlefield of Uhud and the graves of Hamzah and the martyrs", ar: "موقع غزوة أحد ومقبرة الشهداء وحمزة رضي الله عنه" } },
       { city: "madinah", name: { th: "มัสยิดกิบลาตัยน์", en: "Masjid al-Qiblatayn", ar: "مسجد القبلتين" }, d: { th: "มัสยิดที่มีการเปลี่ยนทิศกิบลัตสู่กะอ์บะฮ์", en: "Where the qiblah was turned towards the Kaaba", ar: "حيث تحوّلت القبلة إلى الكعبة" } },
