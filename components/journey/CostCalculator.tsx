@@ -54,7 +54,17 @@ const C = {
     ar: "السعر تقديري وقد يتغيّر حسب موعد السفر وتوفّر الخدمات.",
   },
   plan: { th: "แผนอุมเราะห์ของฉัน", en: "My Umrah plan", ar: "خطة عمرتي" },
+  copied: {
+    th: "คัดลอกแผนแล้ว — เพิ่มเพื่อน LINE ของเรา แล้ววางข้อความในแชทได้เลย",
+    en: "Plan copied — add us on LINE and paste it into the chat.",
+    ar: "تم نسخ الخطة — أضفنا على LINE والصقها في المحادثة.",
+  },
 } satisfies Record<string, L>;
+
+const LINE_ID = "%40024xshvm";
+// oaMessage (chat with the plan pre-filled) only works inside the LINE app on phones;
+// desktop browsers get bounced to line.me's home page.
+const isPhone = () => typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
 export const LineIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -281,6 +291,15 @@ export default function CostCalculator() {
     `${t(C.total)}: ${baht(res.total)} (${t(C.perPerson)} ${baht(res.perPerson)})`,
   ].join("\n");
 
+  const [copied, setCopied] = useState(false);
+  const sendToLine = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    try { await navigator.clipboard.writeText(lineText); } catch {}
+    if (isPhone()) return; // follow the oaMessage link
+    e.preventDefault();
+    window.open(`https://line.me/R/ti/p/${LINE_ID}`, "_blank", "noopener,noreferrer");
+    setCopied(true);
+  };
+
   return (
     <div className="wrap ul">
       <header className="ul-intro">
@@ -397,13 +416,15 @@ export default function CostCalculator() {
           </div>
           <a
             className="ul-cta"
-            href={`https://line.me/R/oaMessage/%40024xshvm/?${encodeURIComponent(lineText)}`}
+            href={`https://line.me/R/oaMessage/${LINE_ID}/?${encodeURIComponent(lineText)}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={sendToLine}
           >
             <LineIcon />
             {t(C.line)}
           </a>
+          {copied && <p className="ul-copied" role="status">{t(C.copied)}</p>}
           <p className="ul-note">{t(C.note)}</p>
         </aside>
       </div>

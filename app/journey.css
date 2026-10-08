@@ -9,8 +9,8 @@
   --pl-line:var(--j-ink);--pl-fill:var(--j-paper);--pl-face:#fff;--pl-abaya:#1C3326;--pl-abaya-line:rgba(224,194,119,.5);
   background:var(--j-paper);color:var(--j-ink);position:relative
 }
-.uj[lang=ar]{font-family:'IBM Plex Sans Arabic','Anuphan',sans-serif}
-.uj[lang=ar] h2,.uj[lang=ar] h3,.uj[lang=ar] .lbl,.uj[lang=ar] .uj-hero-sub{font-family:'IBM Plex Sans Arabic',sans-serif;letter-spacing:0}
+.uj[lang=ar]{font-family:'Amiri','Anuphan',serif}
+.uj[lang=ar] h2,.uj[lang=ar] h3,.uj[lang=ar] .lbl,.uj[lang=ar] .uj-hero-sub{font-family:'Amiri',serif;letter-spacing:0}
 .uj .btn{border-radius:0}
 .uj-eyebrow{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--j-gold)}
 
@@ -205,7 +205,7 @@ header.site.scrolled .uj-lang-btn:hover{background:rgba(11,36,22,.09)}
 .uj-lang-menu button.on .uj-lang-code{color:var(--j-ink);background:linear-gradient(135deg,#EED9A0,#C9A24B)}
 .uj-lang-name{display:grid;line-height:1.25}
 .uj-lang-name b{font-size:.9rem;font-weight:600}
-.uj-lang-name b[lang=ar]{font-family:'IBM Plex Sans Arabic',sans-serif}
+.uj-lang-name b[lang=ar]{font-family:'Amiri',serif}
 .uj-lang-name small{font-size:.72rem;color:#7A857C}
 .uj-lang-tick{margin-left:auto;color:var(--j-gold-d);opacity:0;transform:scale(.5);transition:.25s}
 .uj-lang-menu button.on .uj-lang-tick{opacity:1;transform:none}
@@ -280,7 +280,7 @@ header.site.scrolled .uj-lang-btn:hover{background:rgba(11,36,22,.09)}
 .ul-row.is-edited::before{content:"";position:absolute;inset-block:0;inset-inline-start:-1px;width:3px;background:var(--j-gold)}
 .ul-no{padding-top:2px;font-size:.78rem;font-weight:700;letter-spacing:.06em;color:var(--j-gold-d);font-variant-numeric:lining-nums tabular-nums}
 .ul-head h3{font-family:'Anuphan',sans-serif;font-size:.98rem;font-weight:700;letter-spacing:0;line-height:1.35}
-.uj[lang=ar] .ul-head h3{font-family:'IBM Plex Sans Arabic',sans-serif}
+.uj[lang=ar] .ul-head h3{font-family:'Amiri',serif}
 .ul-head p{margin-top:2px;font-size:.76rem;line-height:1.45;color:var(--j-muted)}
 .ul-flag{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--j-gold-d)}
 .ul-flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--j-gold)}
@@ -308,7 +308,7 @@ header.site.scrolled .uj-lang-btn:hover{background:rgba(11,36,22,.09)}
 .ul-receipt-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:14px;border-bottom:1px dashed var(--ul-rule)}
 .ul-meta{font-size:.76rem;color:var(--j-muted);font-variant-numeric:tabular-nums}
 .ul-basis{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:14px 0 6px;font-family:'Noto Serif Thai',serif;font-size:1.05rem;font-weight:700}
-.uj[lang=ar] .ul-basis{font-family:'IBM Plex Sans Arabic',sans-serif}
+.uj[lang=ar] .ul-basis{font-family:'Amiri',serif}
 .ul-basis-n{font-family:'Anuphan',sans-serif;font-size:.82rem;font-weight:600;color:var(--j-gold-d)}
 .ul-reset{margin-inline-start:auto;padding:0;border:0;background:none;cursor:pointer;font:600 .76rem 'Anuphan',sans-serif;color:var(--j-green);text-decoration:underline;text-underline-offset:3px}
 .ul-lines{list-style:none}
@@ -328,6 +328,7 @@ header.site.scrolled .uj-lang-btn:hover{background:rgba(11,36,22,.09)}
 .ul-cta svg{color:#06C755}
 .ul-cta:hover{background:#18402B;transform:translateY(-1px)}
 .ul-note{margin-top:12px;font-size:.72rem;line-height:1.6;color:var(--j-muted);text-align:center}
+.ul-copied{margin:12px 0 0;padding:10px 14px;border-radius:10px;background:rgba(6,199,85,.1);color:#05843a;font-size:.86rem;line-height:1.5;text-align:center}
 
 @keyframes ul-flash{from{background:rgba(201,162,75,.3)}to{background:transparent}}
 
