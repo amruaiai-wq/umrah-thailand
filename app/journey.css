@@ -421,11 +421,21 @@ header.site.scrolled .uj-lang-btn:hover{background:rgba(11,36,22,.09)}
   .uw-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:900px){
-  .uj-art,.uj[dir=rtl] .uj-art{top:64px;left:0;right:0;bottom:30svh}
-  .uj-track{padding:78svh 0 60svh;gap:50svh}
-  .uj-card{margin-inline:auto;padding:24px 22px}
-  .uj-hud{top:76px;padding:10px 14px;min-width:0}
-  .uj-hud-num b{font-size:2.6rem}
+  /* Mobile: split screen. The story art stays pinned in the top half above an opaque
+     panel; cards scroll in the bottom half and fade out as they slide under it. */
+  .uj-scene:not(.uj-hero) .uj-stage{z-index:4;pointer-events:none}
+  .uj-scene:not(.uj-hero) .uj-stage::before{content:"";position:absolute;inset:0 0 auto;height:var(--uj-pane);z-index:0;
+    background:var(--j-paper);border-bottom:1px solid var(--j-hair)}
+  .uj-scene:not(.uj-hero) .uj-stage::after{content:"";position:absolute;left:0;right:0;top:var(--uj-pane);height:40px;z-index:0;
+    background:linear-gradient(var(--j-paper),rgba(247,241,227,0))}
+  .uj{--uj-pane:48svh}
+  .uj-art,.uj[dir=rtl] .uj-art{top:64px;left:0;right:0;bottom:auto;height:calc(var(--uj-pane) - 68px)}
+  .uj-bgimg{height:var(--uj-pane)}
+  .uj-track{padding:calc(var(--uj-pane) + 28px) 0 22svh;gap:22svh;min-height:250svh}
+  .uj-card{margin-inline:auto;padding:22px 20px;box-shadow:0 14px 30px -24px rgba(11,36,22,.45)}
+  .uj-hud{top:72px;padding:6px 10px;min-width:0;gap:2px}
+  .uj-hud-num b{font-size:2rem}
+  .uj-hud-label{font-size:.6rem}
 }
 @media (max-width:640px){
   .uj-hero-title{top:16%}
